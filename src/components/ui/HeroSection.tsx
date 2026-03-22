@@ -6,43 +6,70 @@ gsap.registerPlugin(ScrollTrigger);
 
 export default function HeroSection() {
   const sectionRef = useRef<HTMLElement>(null);
-  const headlineRef = useRef<HTMLHeadingElement>(null);
+  const headlineLine1Ref = useRef<HTMLSpanElement>(null);
+  const headlineLine2Ref = useRef<HTMLSpanElement>(null);
   const sublineRef = useRef<HTMLParagraphElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Headline animation
-      gsap.from(headlineRef.current, {
-        y: 200,
-        opacity: 0,
-        duration: 1.2,
-        ease: 'power4.out',
-        delay: 0.3
+      // Set initial state
+      gsap.set([headlineLine1Ref.current, headlineLine2Ref.current], {
+        yPercent: 100,
+        opacity: 0
       });
 
-      // Subline animation
-      gsap.from(sublineRef.current, {
-        y: 50,
-        opacity: 0,
+      gsap.set([sublineRef.current, ctaRef.current], {
+        y: 40,
+        opacity: 0
+      });
+
+      // Animation triggered when section enters viewport
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: 'top 80%',
+          end: 'top 20%',
+          toggleActions: 'play none none reverse'
+        }
+      });
+
+      // Line 1 animation - slide up with clip
+      tl.to(headlineLine1Ref.current, {
+        yPercent: 0,
+        opacity: 1,
         duration: 1,
-        ease: 'power3.out',
-        delay: 0.8
-      });
+        ease: 'expo.out'
+      }, 0);
 
-      // CTA animation
-      gsap.from(ctaRef.current, {
-        y: 30,
-        opacity: 0,
+      // Line 2 animation - slide up with clip (delayed)
+      tl.to(headlineLine2Ref.current, {
+        yPercent: 0,
+        opacity: 1,
+        duration: 1,
+        ease: 'expo.out'
+      }, 0.15);
+
+      // Subline animation - fade up
+      tl.to(sublineRef.current, {
+        y: 0,
+        opacity: 1,
         duration: 0.8,
-        ease: 'power3.out',
-        delay: 1.1
-      });
+        ease: 'power3.out'
+      }, 0.4);
 
-      // Parallax on scroll
-      gsap.to(headlineRef.current, {
-        y: -200,
+      // CTA animation - fade up
+      tl.to(ctaRef.current, {
+        y: 0,
+        opacity: 1,
+        duration: 0.6,
+        ease: 'power3.out'
+      }, 0.6);
+
+      // Parallax on scroll - subtle
+      gsap.to([headlineLine1Ref.current, headlineLine2Ref.current], {
+        y: -80,
         scrollTrigger: {
           trigger: sectionRef.current,
           start: 'top top',
@@ -54,7 +81,7 @@ export default function HeroSection() {
       // Video scale on scroll
       if (videoRef.current) {
         gsap.to(videoRef.current, {
-          scale: 1.2,
+          scale: 1.1,
           scrollTrigger: {
             trigger: sectionRef.current,
             start: 'top bottom',
@@ -99,16 +126,22 @@ export default function HeroSection() {
       <div className="relative z-10 h-full flex flex-col justify-end section-padding">
         <div className="container-main">
           {/* Eyebrow */}
-          
+
 
           {/* Main Headline */}
-          <h1
-            ref={headlineRef}
-            className="text-hero font-display font-bold text-white mb-8"
-          >
-            CRAFTING
-            <br />
-            <span className="text-white/30">CULTURE</span>
+          <h1 className="text-hero font-display font-bold text-white mb-8 overflow-hidden">
+            <span
+              ref={headlineLine1Ref}
+              className="block"
+            >
+              CAPTURING
+            </span>
+            <span
+              ref={headlineLine2Ref}
+              className="block text-white/30"
+            >
+              MOMENTS
+            </span>
           </h1>
 
           {/* Subline */}
@@ -116,9 +149,9 @@ export default function HeroSection() {
             ref={sublineRef}
             className="text-large text-white/70 max-w-xl font-light mb-12"
           >
-            We transform vision into visceral experiences.
+            Professional photography & videography for every occasion.
             <br />
-            Where art meets algorithm.
+            Telling your story through stunning visuals.
           </p>
 
           {/* CTA */}
@@ -148,7 +181,7 @@ export default function HeroSection() {
       {/* Corner Accent */}
       <div className="absolute top-24 right-8 lg:right-12 z-10">
         <div className="flex items-center gap-3">
-          <span className="text-[10px] tracking-[0.2em] text-white/40">EST. 2024</span>
+          <span className="text-[10px] tracking-[0.2em] text-white/40">MARKMEDIA</span>
           <div className="w-8 h-[1px] bg-white/20" />
         </div>
       </div>

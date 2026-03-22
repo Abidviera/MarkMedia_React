@@ -65,7 +65,7 @@ body {
 
 /* Text Sizes */
 .text-hero {
-  font-size: clamp(80px, 18vw, 240px);
+  font-size: clamp(70px, 15vw, 200px);
   line-height: 0.85;
   letter-spacing: -0.04em;
 }

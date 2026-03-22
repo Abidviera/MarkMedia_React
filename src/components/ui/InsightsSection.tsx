@@ -95,13 +95,10 @@ export default function InsightsSection() {
 
         .insight-card {
           padding-top: 2rem;
-          border-top: 1px solid rgba(255, 255, 255, 0.1);
+     
         }
 
-        .insight-card:first-child {
-          border-top: none;
-          padding-top: 0;
-        }
+     
 
         .insight-meta {
           display: flex;
@@ -277,10 +274,7 @@ export default function InsightsSection() {
             padding-top: 2rem;
           }
 
-          .insight-card:first-child {
-            border-top: none;
-            padding-top: 0;
-          }
+     
 
           .insights-newsletter {
             flex-direction: column;

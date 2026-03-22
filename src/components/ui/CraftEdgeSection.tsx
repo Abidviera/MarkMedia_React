@@ -299,19 +299,7 @@ export default function CraftEdgeSection() {
 
       {/* Footer */}
       <footer className="black-footer">
-        <div className="footer-inner">
-          <div className="footer-logo">Mark Media</div>
-          <div className="footer-links">
-            <a href="#">Work</a>
-            <a href="#">Services</a>
-            <a href="#">Contact</a>
-          </div>
-          <div className="footer-contact">
-            <a href="#">hello@markmedia.com</a>
-            <a href="#">Instagram</a>
-            <a href="#">LinkedIn</a>
-          </div>
-        </div>
+        
       </footer>
 
       {/* Inline Styles */}

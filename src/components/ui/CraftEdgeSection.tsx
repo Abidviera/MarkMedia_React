@@ -448,7 +448,7 @@ export default function CraftEdgeSection() {
 
         .section-intro {
           background-color: var(--white);
-          border-top: 1px solid var(--black);
+        
           padding: 1rem 2rem;
           position: relative;
           z-index: 1;
@@ -561,7 +561,6 @@ export default function CraftEdgeSection() {
 
         .timeline-section {
           padding: 6rem 0rem 3rem;
-          border-top: 1px solid var(--black);
           display: flex;
           flex-direction: column;
         }

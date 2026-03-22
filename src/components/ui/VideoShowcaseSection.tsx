@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface Section {
   service: string;
@@ -47,52 +48,78 @@ const sections: Section[] = [
 ];
 
 export default function VideoShowcaseSection() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const fixedContainerRef = useRef<HTMLDivElement>(null);
   const [currentSection, setCurrentSection] = useState(0);
-  const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
+  const [isMobile, setIsMobile] = useState(false);
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const mobileVideoRef = useRef<HTMLVideoElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const desktopVideoRefs = useRef<(HTMLVideoElement | null)[]>([]);
 
-  const handleScroll = useCallback(() => {
-    if (!containerRef.current) return;
-
-    const container = containerRef.current;
-    const rect = container.getBoundingClientRect();
-    const containerHeight = container.offsetHeight;
-    const viewportHeight = window.innerHeight;
-
-    const scrollStart = rect.top;
-    const scrollEnd = rect.bottom - viewportHeight;
-
-    if (scrollEnd <= 0) {
-      setCurrentSection(5);
-      return;
-    }
-
-    if (scrollStart >= 0) {
-      setCurrentSection(0);
-      return;
-    }
-
-    const progress = Math.abs(scrollStart) / (containerHeight - viewportHeight);
-    const newSection = Math.min(5, Math.floor(progress * 6));
-    setCurrentSection(newSection);
+  // Check if mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  // Scroll-based video change for Desktop
   useEffect(() => {
+    if (isMobile) return;
+
+    const handleScroll = () => {
+      if (!containerRef.current) return;
+
+      const container = containerRef.current;
+      const rect = container.getBoundingClientRect();
+      const containerHeight = container.offsetHeight;
+      const viewportHeight = window.innerHeight;
+
+      const scrollStart = rect.top;
+      const scrollEnd = rect.bottom - viewportHeight;
+
+      if (scrollEnd <= 0) {
+        setCurrentSection(5);
+        return;
+      }
+
+      if (scrollStart >= 0) {
+        setCurrentSection(0);
+        return;
+      }
+
+      const progress = Math.abs(scrollStart) / (containerHeight - viewportHeight);
+      const newSection = Math.min(5, Math.floor(progress * 6));
+      setCurrentSection(newSection);
+    };
+
     window.addEventListener('scroll', handleScroll);
     handleScroll();
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [handleScroll]);
+  }, [isMobile]);
 
   // Play/pause videos based on current section
   useEffect(() => {
-    const playCurrentVideo = async () => {
-      videoRefs.current.forEach((video, index) => {
+    if (isMobile) {
+      // Mobile: single video
+      if (mobileVideoRef.current) {
+        mobileVideoRef.current.src = sections[currentSection].video;
+        mobileVideoRef.current.load();
+        mobileVideoRef.current.play().catch(() => {
+          // Silently handle autoplay restrictions
+        });
+      }
+    } else {
+      // Desktop: all videos - play current, pause others
+      desktopVideoRefs.current.forEach((video, index) => {
         if (video) {
           if (index === currentSection) {
             video.muted = false;
             video.play().catch(() => {
-              // If autoplay fails, try with muted
+              // Try muted if autoplay fails
               video.muted = true;
               video.play().catch(() => {});
             });
@@ -101,25 +128,401 @@ export default function VideoShowcaseSection() {
           }
         }
       });
-    };
+    }
+  }, [currentSection, isMobile]);
 
-    playCurrentVideo();
-  }, [currentSection]);
-
-  // Initialize videos
+  // Initialize videos on mount
   useEffect(() => {
-    videoRefs.current.forEach((video, index) => {
-      if (video) {
-        video.load();
-        if (index === 0) {
-          video.play().catch(() => {});
+    // Desktop: initialize all videos
+    if (!isMobile) {
+      desktopVideoRefs.current.forEach((video, index) => {
+        if (video) {
+          if (index === 0) {
+            video.play().catch(() => {});
+          }
         }
-      }
-    });
-  }, []);
+      });
+    }
+  }, [isMobile]);
+
+  // Touch handlers for swipe (Mobile only)
+  const minSwipeDistance = 50;
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if (isLeftSwipe && currentSection < sections.length - 1) {
+      setCurrentSection(prev => prev + 1);
+    }
+    if (isRightSwipe && currentSection > 0) {
+      setCurrentSection(prev => prev - 1);
+    }
+  };
 
   const progressPercent = (currentSection / (sections.length - 1)) * 100;
 
+  // Mobile Layout
+  if (isMobile) {
+    return (
+      <div style={{ backgroundColor: '#000', width: '100%', margin: 0, padding: 0 }}>
+        <div
+          style={{
+            height: 'calc(100vh - 60px)',
+            width: '100%',
+            position: 'relative',
+            overflow: 'hidden',
+            touchAction: 'pan-y'
+          }}
+          onTouchStart={onTouchStart}
+          onTouchMove={onTouchMove}
+          onTouchEnd={onTouchEnd}
+        >
+          {/* Video Background */}
+          <video
+            ref={mobileVideoRef}
+            src={sections[currentSection].video}
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              filter: 'brightness(0.6)'
+            }}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            key={currentSection}
+          />
+
+          {/* Gradient Overlay */}
+          <div
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.1) 30%, rgba(0,0,0,0.1) 70%, rgba(0,0,0,0.6) 100%)',
+              zIndex: 1
+            }}
+          />
+
+          {/* Content */}
+          <div
+            style={{
+              position: 'relative',
+              height: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              padding: '1.5rem 1rem',
+              zIndex: 2
+            }}
+          >
+            {/* Top - Visual Stories */}
+            <div
+              style={{
+                textAlign: 'center',
+                paddingTop: '1rem'
+              }}
+            >
+              <h2
+                style={{
+                  fontSize: '1.75rem',
+                  fontWeight: 800,
+                  color: 'rgba(255, 255, 255, 0.95)',
+                  fontFamily: "'Inter', sans-serif",
+                  textTransform: 'uppercase',
+                  letterSpacing: '-0.02em',
+                  lineHeight: 1,
+                  margin: 0
+                }}
+              >
+                Visual Stories
+              </h2>
+            </div>
+
+            {/* Center - Main Content */}
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '1rem'
+              }}
+            >
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentSection}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.3 }}
+                  style={{
+                    textAlign: 'center'
+                  }}
+                >
+                  <span
+                    style={{
+                      fontSize: '0.65rem',
+                      fontWeight: 500,
+                      color: 'rgba(255, 255, 255, 0.6)',
+                      fontFamily: "'Inter', sans-serif",
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.2em'
+                    }}
+                  >
+                    {sections[currentSection].category}
+                  </span>
+                  <h3
+                    style={{
+                      fontSize: '1.5rem',
+                      fontWeight: 700,
+                      color: '#fff',
+                      fontFamily: "'Inter', sans-serif",
+                      textTransform: 'uppercase',
+                      letterSpacing: '-0.01em',
+                      margin: '0.5rem 0'
+                    }}
+                  >
+                    {sections[currentSection].featured}
+                  </h3>
+                  <p
+                    style={{
+                      fontSize: '0.875rem',
+                      fontWeight: 600,
+                      color: 'rgba(255, 255, 255, 0.8)',
+                      fontFamily: "'Inter', sans-serif",
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.1em'
+                    }}
+                  >
+                    {sections[currentSection].service}
+                  </p>
+                </motion.div>
+              </AnimatePresence>
+
+              {/* Play Button Indicator */}
+              <div
+                style={{
+                  width: '60px',
+                  height: '60px',
+                  borderRadius: '50%',
+                  border: '2px solid rgba(255, 255, 255, 0.3)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginTop: '0.5rem'
+                }}
+              >
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="white"
+                >
+                  <polygon points="5,3 19,12 5,21" />
+                </svg>
+              </div>
+            </div>
+
+            {/* Bottom - Capturing Excellence + Progress */}
+            <div style={{ textAlign: 'center' }}>
+              <h2
+                style={{
+                  fontSize: '1.75rem',
+                  fontWeight: 800,
+                  color: 'rgba(255, 255, 255, 0.95)',
+                  fontFamily: "'Inter', sans-serif",
+                  textTransform: 'uppercase',
+                  letterSpacing: '-0.02em',
+                  lineHeight: 1,
+                  margin: '0 0 1.5rem 0'
+                }}
+              >
+                Capturing Excellence
+              </h2>
+
+              {/* Progress Indicator */}
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '0.75rem'
+                }}
+              >
+                {/* Progress Bar */}
+                <div
+                  style={{
+                    width: '100%',
+                    maxWidth: '200px',
+                    height: '3px',
+                    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                    borderRadius: '2px',
+                    overflow: 'hidden'
+                  }}
+                >
+                  <motion.div
+                    style={{
+                      height: '100%',
+                      backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                      borderRadius: '2px'
+                    }}
+                    initial={{ width: 0 }}
+                    animate={{ width: `${progressPercent}%` }}
+                    transition={{ duration: 0.3 }}
+                  />
+                </div>
+
+                {/* Dots */}
+                <div
+                  style={{
+                    display: 'flex',
+                    gap: '0.5rem',
+                    justifyContent: 'center'
+                  }}
+                >
+                  {sections.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentSection(index)}
+                      style={{
+                        width: index === currentSection ? '24px' : '8px',
+                        height: '8px',
+                        borderRadius: '4px',
+                        backgroundColor: index === currentSection
+                          ? 'rgba(255, 255, 255, 0.9)'
+                          : 'rgba(255, 255, 255, 0.3)',
+                        border: 'none',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease',
+                        padding: 0
+                      }}
+                      aria-label={`Go to slide ${index + 1}`}
+                    />
+                  ))}
+                </div>
+
+                {/* Counter */}
+                <div
+                  style={{
+                    fontSize: '0.7rem',
+                    color: 'rgba(255, 255, 255, 0.6)',
+                    fontFamily: "'Inter', sans-serif",
+                    letterSpacing: '0.1em'
+                  }}
+                >
+                  {String(currentSection + 1).padStart(2, '0')} / {String(sections.length).padStart(2, '0')}
+                </div>
+              </div>
+
+              {/* Swipe Hint */}
+              <p
+                style={{
+                  fontSize: '0.65rem',
+                  color: 'rgba(255, 255, 255, 0.4)',
+                  fontFamily: "'Inter', sans-serif",
+                  marginTop: '1rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.5rem'
+                }}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+                Swipe to explore
+              </p>
+            </div>
+          </div>
+
+          {/* Side Navigation Arrows */}
+          <button
+            onClick={() => currentSection > 0 && setCurrentSection(prev => prev - 1)}
+            disabled={currentSection === 0}
+            style={{
+              position: 'absolute',
+              left: '0.75rem',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              width: '40px',
+              height: '40px',
+              borderRadius: '50%',
+              backgroundColor: currentSection === 0 ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.2)',
+              border: 'none',
+              cursor: currentSection === 0 ? 'default' : 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 3,
+              opacity: currentSection === 0 ? 0.3 : 1
+            }}
+            aria-label="Previous"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+              <path d="M15 18l-6-6 6-6"/>
+            </svg>
+          </button>
+
+          <button
+            onClick={() => currentSection < sections.length - 1 && setCurrentSection(prev => prev + 1)}
+            disabled={currentSection === sections.length - 1}
+            style={{
+              position: 'absolute',
+              right: '0.75rem',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              width: '40px',
+              height: '40px',
+              borderRadius: '50%',
+              backgroundColor: currentSection === sections.length - 1 ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.2)',
+              border: 'none',
+              cursor: currentSection === sections.length - 1 ? 'default' : 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 3,
+              opacity: currentSection === sections.length - 1 ? 0.3 : 1
+            }}
+            aria-label="Next"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+              <path d="M9 18l6-6-6-6"/>
+            </svg>
+          </button>
+        </div>
+
+        <style>{`
+          @media (max-width: 768px) {
+            .video-showcase-mobile {
+              -webkit-user-select: none;
+              user-select: none;
+            }
+          }
+        `}</style>
+      </div>
+    );
+  }
+
+  // Desktop Layout (Original)
   return (
     <div style={{ backgroundColor: '#000' }}>
       {/* Scroll Section */}
@@ -133,7 +536,6 @@ export default function VideoShowcaseSection() {
       >
         {/* Fixed Content */}
         <div
-          ref={fixedContainerRef}
           style={{
             position: 'sticky',
             top: 0,
@@ -158,7 +560,8 @@ export default function VideoShowcaseSection() {
             {sections.map((section, index) => (
               <video
                 key={index}
-                ref={(el) => { videoRefs.current[index] = el; }}
+                ref={(el) => { desktopVideoRefs.current[index] = el; }}
+                src={section.video}
                 style={{
                   position: 'absolute',
                   top: '-10%',
@@ -171,13 +574,12 @@ export default function VideoShowcaseSection() {
                   transition: 'opacity 0.8s ease',
                   zIndex: index === currentSection ? 2 : 0
                 }}
+                autoPlay
                 muted
                 loop
                 playsInline
                 preload="auto"
-              >
-                <source src={section.video} type="video/mp4" />
-              </video>
+              />
             ))}
           </div>
 
@@ -432,9 +834,7 @@ export default function VideoShowcaseSection() {
           alignItems: 'center',
           justifyContent: 'center'
         }}
-      >
-        
-      </div>
+      />
     </div>
   );
 }

@@ -327,10 +327,17 @@ body {
 @media (max-width: 768px) {
   body {
     cursor: auto;
+    overflow-x: hidden;
   }
 
   .cursor-dot,
   .cursor-ring {
     display: none;
+  }
+
+  main {
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
   }
 }

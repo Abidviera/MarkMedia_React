@@ -1,6 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 
 export default function ContactSection() {
+  const sectionRef = useRef<HTMLElement>(null);
   const [formState, setFormState] = useState({
     name: '',
     email: '',
@@ -21,44 +26,84 @@ export default function ContactSection() {
     }));
   };
 
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      // Animate header
+      gsap.from('.contact-heading-line', {
+        y: 100,
+        opacity: 0,
+        duration: 1,
+        stagger: 0.1,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: '.contact-header',
+          start: 'top 70%',
+          toggleActions: 'play none none reverse',
+        },
+      });
+
+      // Animate info items
+      gsap.from('.contact-info-item', {
+        y: 50,
+        opacity: 0,
+        duration: 0.8,
+        stagger: 0.15,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: '.contact-info',
+          start: 'top 75%',
+          toggleActions: 'play none none reverse',
+        },
+      });
+
+      // Animate form
+      gsap.from('.form-group', {
+        y: 30,
+        opacity: 0,
+        duration: 0.6,
+        stagger: 0.1,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: '.contact-form',
+          start: 'top 80%',
+          toggleActions: 'play none none reverse',
+        },
+      });
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
-    <section className="contact-section">
+    <section ref={sectionRef} id="contact" className="contact-section">
       <style>{`
         .contact-section {
-          background-color: #ffffff;
-          border-top: 1px solid #000000;
-          padding: 6rem 2rem;
+          position: relative;
+          background-color: #000000;
+          border-top: 1px solid rgba(255, 255, 255, 0.1);
+          padding: 8rem 2rem;
+          overflow: hidden;
         }
 
         .contact-container {
-          max-width: 1280px;
+          position: relative;
+          max-width: 1400px;
           margin: 0 auto;
+          z-index: 2;
         }
 
-        .contact-grid {
-          display: flex;
-          gap: 6rem;
-          justify-content: space-between;
+        .contact-header {
+          margin-bottom: 5rem;
+          padding-bottom: 3rem;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .contact-left {
-          flex: 1;
-          max-width: 45%;
-        }
-
-        .contact-right {
-          flex: 1;
-          max-width: 45%;
-          padding-left: 4rem;
-          border-left: 1px solid rgba(0, 0, 0, 0.1);
-        }
-
-        .contact-small-title {
+        .contact-eyebrow {
           font-family: 'Inter', sans-serif;
           font-weight: 600;
           font-size: 0.75rem;
           text-transform: uppercase;
-          letter-spacing: 0.2em;
+          letter-spacing: 0.3em;
           color: #dc2626;
           margin-bottom: 1rem;
         }
@@ -66,45 +111,71 @@ export default function ContactSection() {
         .contact-main-title {
           font-family: 'Inter', sans-serif;
           font-weight: 800;
-          font-size: 5rem;
+          font-size: clamp(3rem, 8vw, 6rem);
           line-height: 1;
-          color: #000000;
+          color: #ffffff;
           letter-spacing: -0.03em;
-          margin-bottom: 2rem;
+          text-transform: uppercase;
+          overflow: hidden;
+        }
+
+        .contact-heading-line {
+          display: block;
+        }
+
+        .contact-heading-accent {
+          color: transparent;
+          -webkit-text-stroke: 1px rgba(255, 255, 255, 0.5);
+        }
+
+        .contact-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 6rem;
+        }
+
+        .contact-left {
+          display: flex;
+          flex-direction: column;
         }
 
         .contact-subtitle {
           font-family: 'Inter', sans-serif;
           font-size: 1.1rem;
-          color: #737373;
-          line-height: 1.7;
+          color: rgba(255, 255, 255, 0.5);
+          line-height: 1.8;
           margin-bottom: 3rem;
           max-width: 450px;
         }
 
         .contact-info {
+          display: flex;
+          flex-direction: column;
+          gap: 2rem;
           margin-bottom: 3rem;
         }
 
         .contact-info-item {
-          margin-bottom: 2rem;
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
         }
 
         .contact-info-label {
           font-family: 'Inter', sans-serif;
           font-size: 0.65rem;
-          color: rgba(0, 0, 0, 0.3);
+          color: rgba(255, 255, 255, 0.3);
           text-transform: uppercase;
           letter-spacing: 0.2em;
-          margin-bottom: 0.5rem;
         }
 
         .contact-info-value {
           font-family: 'Inter', sans-serif;
           font-size: 1.25rem;
-          color: #000000;
+          color: #ffffff;
           text-decoration: none;
           transition: color 0.3s ease;
+          display: inline-block;
         }
 
         .contact-info-value:hover {
@@ -114,146 +185,223 @@ export default function ContactSection() {
         .contact-info-text {
           font-family: 'Inter', sans-serif;
           font-size: 1.25rem;
-          color: #000000;
+          color: #ffffff;
           line-height: 1.6;
         }
 
         .contact-info-sub {
           font-family: 'Inter', sans-serif;
-          font-size: 0.95rem;
-          color: #737373;
+          font-size: 0.9rem;
+          color: rgba(255, 255, 255, 0.4);
         }
 
         .contact-social {
           display: flex;
           gap: 1.5rem;
-          margin-top: 3rem;
+          margin-top: auto;
           padding-top: 2rem;
-          border-top: 1px solid rgba(0, 0, 0, 0.1);
+          border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .contact-social-link {
           font-family: 'Inter', sans-serif;
           font-size: 0.7rem;
-          color: rgba(0, 0, 0, 0.4);
+          color: rgba(255, 255, 255, 0.4);
           text-decoration: none;
           text-transform: uppercase;
           letter-spacing: 0.15em;
-          transition: color 0.3s ease;
+          transition: all 0.3s ease;
+          padding: 0.5rem 1rem;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          position: relative;
+          overflow: hidden;
+        }
+
+        .contact-social-link::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: #dc2626;
+          transform: translateY(100%);
+          transition: transform 0.3s ease;
+          z-index: 0;
+        }
+
+        .contact-social-link span {
+          position: relative;
+          z-index: 1;
         }
 
         .contact-social-link:hover {
-          color: #000000;
+          color: #ffffff;
+          border-color: #dc2626;
+        }
+
+        .contact-social-link:hover::before {
+          transform: translateY(0);
+        }
+
+        .contact-right {
+          padding-left: 4rem;
+          border-left: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .contact-form {
           display: flex;
           flex-direction: column;
-          gap: 2rem;
+          gap: 2.5rem;
         }
 
         .form-group {
           display: flex;
           flex-direction: column;
+          gap: 0.75rem;
         }
 
         .form-label {
           font-family: 'Inter', sans-serif;
           font-size: 0.65rem;
-          color: rgba(0, 0, 0, 0.4);
+          color: rgba(255, 255, 255, 0.5);
           text-transform: uppercase;
           letter-spacing: 0.2em;
-          margin-bottom: 0.75rem;
         }
 
         .form-input,
         .form-select,
         .form-textarea {
+          width: 100%;
           padding: 1rem 0;
           background-color: transparent;
           border: none;
-          border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+          border-bottom: 1px solid rgba(255, 255, 255, 0.2);
           font-family: 'Inter', sans-serif;
           font-size: 1rem;
-          color: #000000;
+          color: #ffffff;
           outline: none;
           transition: border-color 0.3s ease;
         }
 
         .form-input::placeholder,
         .form-textarea::placeholder {
-          color: rgba(0, 0, 0, 0.3);
+          color: rgba(255, 255, 255, 0.2);
         }
 
         .form-input:focus,
         .form-select:focus,
         .form-textarea:focus {
-          border-bottom-color: #000000;
+          border-bottom-color: #dc2626;
         }
 
         .form-select {
           cursor: pointer;
           appearance: none;
-          background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+          background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
           background-repeat: no-repeat;
           background-position: right 0 center;
           background-size: 1em;
         }
 
+        .form-select option {
+          background: #000000;
+          color: #ffffff;
+        }
+
         .form-textarea {
           resize: none;
-          min-height: 100px;
+          min-height: 120px;
         }
 
         .form-submit {
+          position: relative;
           width: 100%;
           padding: 1.5rem;
-          background-color: #000000;
+          background-color: transparent;
           color: #ffffff;
-          border: 2px solid #000000;
+          border: 1px solid #ffffff;
           font-family: 'Inter', sans-serif;
           font-size: 0.7rem;
           font-weight: 600;
           text-transform: uppercase;
           letter-spacing: 0.2em;
           cursor: pointer;
-          transition: all 0.3s ease;
+          transition: all 0.4s ease;
+          overflow: hidden;
           margin-top: 1rem;
         }
 
-        .form-submit:hover {
-          background-color: #dc2626;
-          border-color: #dc2626;
+        .form-submit::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: #dc2626;
+          transform: translateX(-100%);
+          transition: transform 0.4s ease;
+          z-index: 0;
         }
 
-        @media (max-width: 768px) {
-          .contact-section {
-            padding: 4rem 1.5rem;
-          }
+        .form-submit span {
+          position: relative;
+          z-index: 1;
+        }
 
+        .form-submit:hover {
+          border-color: #dc2626;
+          color: #ffffff;
+        }
+
+        .form-submit:hover::before {
+          transform: translateX(0);
+        }
+
+        .form-submit:active {
+          transform: scale(0.98);
+        }
+
+        /* Background decoration */
+        .contact-bg-text {
+          position: absolute;
+          bottom: -10%;
+          left: -5%;
+          font-family: 'Inter', sans-serif;
+          font-size: 30vw;
+          font-weight: 800;
+          color: #ffffff;
+          opacity: 0.01;
+          letter-spacing: -0.05em;
+          pointer-events: none;
+          user-select: none;
+          z-index: 1;
+        }
+
+        @media (max-width: 1024px) {
           .contact-grid {
-            flex-direction: column;
+            grid-template-columns: 1fr;
             gap: 4rem;
-          }
-
-          .contact-left,
-          .contact-right {
-            max-width: 100%;
-            width: 100%;
           }
 
           .contact-right {
             padding-left: 0;
             border-left: none;
           }
+        }
+
+        @media (max-width: 768px) {
+          .contact-section {
+            padding: 5rem 1.5rem;
+          }
 
           .contact-main-title {
-            font-size: 3.5rem;
+            font-size: 2.5rem;
           }
 
           .contact-social {
             flex-wrap: wrap;
             gap: 1rem;
+          }
+
+          .contact-bg-text {
+            font-size: 50vw;
+            bottom: 0;
           }
         }
       `}</style>
@@ -262,14 +410,17 @@ export default function ContactSection() {
         <div className="contact-grid">
           {/* Left - Info */}
           <div className="contact-left">
-            <p className="contact-small-title">Get In Touch</p>
-            <h2 className="contact-main-title">
-              START A<br />
-              PROJECT
-            </h2>
+            <div className="contact-header">
+              <p className="contact-eyebrow">Get In Touch</p>
+              <h2 className="contact-main-title">
+                <span className="contact-heading-line">START A</span>
+                <span className="contact-heading-line contact-heading-accent">PROJECT</span>
+              </h2>
+            </div>
+
             <p className="contact-subtitle">
               Ready to transform your vision into something extraordinary?
-              We'd love to hear about your next project.
+              We'd love to hear about your next project. Let's create something amazing together.
             </p>
 
             {/* Contact Info */}
@@ -289,8 +440,8 @@ export default function ContactSection() {
               <div className="contact-info-item">
                 <p className="contact-info-label">Location</p>
                 <p className="contact-info-text">
-                  Dubai, UAE<br />
-                  <span className="contact-info-sub">Available worldwide</span>
+                  Dubai, UAE
+                  <span className="contact-info-sub"> — Available worldwide</span>
                 </p>
               </div>
             </div>
@@ -299,7 +450,7 @@ export default function ContactSection() {
             <div className="contact-social">
               {['IG', 'FB', 'TW', 'LN'].map((social) => (
                 <a key={social} href="#contact" className="contact-social-link">
-                  {social}
+                  <span>{social}</span>
                 </a>
               ))}
             </div>
@@ -384,12 +535,15 @@ export default function ContactSection() {
 
               {/* Submit */}
               <button type="submit" className="form-submit">
-                Send Message
+                <span>Send Message</span>
               </button>
             </form>
           </div>
         </div>
       </div>
+
+      {/* Background decoration */}
+      <span className="contact-bg-text">SAY</span>
     </section>
   );
 }

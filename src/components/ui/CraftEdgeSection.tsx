@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -13,8 +13,22 @@ export default function CraftEdgeSection() {
   const headlineRef = useRef<HTMLHeadingElement>(null);
   const introRef = useRef<HTMLDivElement>(null);
   const timelineRef = useRef<HTMLDivElement>(null);
+  const [isMobile, setIsMobile] = useState(false);
 
+  // Check if mobile
   useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Desktop-only GSAP animations
+  useEffect(() => {
+    if (isMobile) return;
+
     const ctx = gsap.context(() => {
       const header = headerRef.current;
 
@@ -199,13 +213,335 @@ export default function CraftEdgeSection() {
     }, sectionRef);
 
     return () => ctx.revert();
-  }, []);
+  }, [isMobile]);
 
+  // ==========================
+  // MOBILE LAYOUT
+  // ==========================
+  if (isMobile) {
+    return (
+      <section ref={sectionRef} style={{ backgroundColor: '#fff', width: '100%', color: '#000' }}>
+        {/* Mobile Hero */}
+        <div style={{
+          backgroundColor: '#fff',
+          padding: '6rem 1.5rem 3rem',
+          textAlign: 'center',
+          minHeight: '50vh',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          position: 'relative',
+          overflow: 'hidden'
+        }}>
+          {/* Logo Stamp */}
+          <img
+            src="/logo.png"
+            alt="Mark Media"
+            style={{
+              width: '80px',
+              marginBottom: '2rem',
+              opacity: 0.9
+            }}
+          />
+
+          <h1 style={{
+            fontFamily: 'Inter, sans-serif',
+            fontWeight: 800,
+            fontSize: 'clamp(2.5rem, 12vw, 4rem)',
+            textTransform: 'uppercase',
+            letterSpacing: '-0.02em',
+            lineHeight: 0.9,
+            margin: '0.5rem 0',
+            color: 'transparent',
+            WebkitTextStroke: '1px #000'
+          }}>
+            Mark Media
+          </h1>
+          <h2 style={{
+            fontFamily: 'Inter, sans-serif',
+            fontWeight: 800,
+            fontSize: 'clamp(1.5rem, 8vw, 2.5rem)',
+            textTransform: 'uppercase',
+            letterSpacing: '-0.02em',
+            lineHeight: 1,
+            marginTop: '0.5rem',
+            color: '#dc2626'
+          }}>
+            Visual Excellence
+          </h2>
+
+          {/* Camera Image */}
+          <img
+            src="/camera.png"
+            alt="Camera"
+            style={{
+              width: '60%',
+              maxWidth: '250px',
+              marginTop: '2rem',
+              filter: 'drop-shadow(4px 4px 8px rgba(0,0,0,0.15))'
+            }}
+          />
+        </div>
+
+        {/* Mobile About Section */}
+        <div style={{
+          backgroundColor: '#fff',
+          padding: '3rem 1.5rem',
+          width: '100%'
+        }}>
+          <p style={{
+            fontFamily: 'Inter, sans-serif',
+            fontWeight: 600,
+            fontSize: '0.7rem',
+            textTransform: 'uppercase',
+            letterSpacing: '0.2em',
+            color: '#dc2626',
+            marginBottom: '1rem',
+            textAlign: 'center'
+          }}>
+            About Us
+          </p>
+
+          <h2 style={{
+            fontFamily: 'Inter, sans-serif',
+            fontWeight: 800,
+            fontSize: 'clamp(1.75rem, 7vw, 2.5rem)',
+            lineHeight: 1.1,
+            color: '#000',
+            marginBottom: '1.5rem',
+            textAlign: 'center',
+            letterSpacing: '-0.02em'
+          }}>
+            Capturing<br />Timeless Moments
+          </h2>
+
+          <p style={{
+            fontSize: '0.95rem',
+            color: '#737373',
+            lineHeight: 1.7,
+            marginBottom: '2rem',
+            textAlign: 'center',
+            padding: '0 0.5rem'
+          }}>
+            Mark Media is a premier photography and videography studio based in the United Arab Emirates. We specialize in transforming moments into timeless visual stories through our comprehensive range of professional photography services.
+          </p>
+
+          <a href="#" style={{
+            display: 'inline-block',
+            padding: '1rem 2rem',
+            border: '2px solid #000',
+            backgroundColor: '#000',
+            color: '#fff',
+            textDecoration: 'none',
+            fontWeight: 600,
+            fontSize: '0.8rem',
+            letterSpacing: '0.1em',
+            textTransform: 'uppercase',
+            textAlign: 'center',
+            width: '100%',
+            maxWidth: '300px',
+            margin: '0 auto',
+            display: 'block'
+          }}>
+            Explore Work
+          </a>
+        </div>
+
+        {/* Mobile Achievements */}
+        <div style={{
+          backgroundColor: '#fff',
+          padding: '2rem 1.5rem 3rem',
+          width: '100%'
+        }}>
+          <h3 style={{
+            fontFamily: 'Inter, sans-serif',
+            fontSize: '1.25rem',
+            color: '#000',
+            marginBottom: '2rem',
+            textTransform: 'uppercase',
+            textAlign: 'center',
+            letterSpacing: '0.05em',
+            fontWeight: 700
+          }}>
+            Our Achievements
+          </h3>
+
+          {[
+            { qty: '01', name: '500+ Projects Completed', desc: 'Delivering excellence across all projects.' },
+            { qty: '02', name: '10+ Years Experience', desc: 'A decade of visual storytelling expertise.' },
+            { qty: '03', name: '450+ Happy Clients', desc: 'Trusted by businesses and individuals.' },
+            { qty: '04', name: '15+ Team Members', desc: 'Skilled photographers and videographers.' },
+          ].map((item, i) => (
+            <div key={i} style={{
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: '1.5rem',
+              marginBottom: '1.5rem',
+              paddingBottom: '1.5rem',
+              borderBottom: i < 3 ? '1px solid #e5e5e5' : 'none'
+            }}>
+              <div style={{
+                fontFamily: 'Inter, sans-serif',
+                fontSize: '1.25rem',
+                color: '#dc2626',
+                minWidth: '40px',
+                fontWeight: 700
+              }}>
+                {item.qty}
+              </div>
+              <div>
+                <strong style={{
+                  fontFamily: 'Inter, sans-serif',
+                  fontSize: '1rem',
+                  color: '#000',
+                  display: 'block',
+                  marginBottom: '0.25rem',
+                  fontWeight: 600
+                }}>
+                  {item.name}
+                </strong>
+                <p style={{
+                  fontSize: '0.85rem',
+                  color: '#737373',
+                  margin: 0,
+                  lineHeight: 1.5
+                }}>
+                  {item.desc}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Mobile Services */}
+        <div style={{
+          backgroundColor: '#fff',
+          padding: '3rem 1.5rem',
+          width: '100%'
+        }}>
+          <h2 style={{
+            fontFamily: 'Inter, sans-serif',
+            fontWeight: 800,
+            fontSize: 'clamp(2.5rem, 10vw, 4rem)',
+            lineHeight: 1,
+            color: '#000',
+            marginBottom: '2rem',
+            letterSpacing: '-0.03em',
+            textAlign: 'center'
+          }}>
+            Our Services
+          </h2>
+
+          {/* Service 1 */}
+          <div style={{
+            marginBottom: '2rem',
+            textAlign: 'center'
+          }}>
+            <img
+              src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=400&q=80"
+              alt="Photography Services"
+              style={{
+                width: '100%',
+                maxWidth: '300px',
+                border: '2px solid #000',
+                marginBottom: '1rem',
+                filter: 'grayscale(100%)'
+              }}
+            />
+            <span style={{
+              fontFamily: 'Inter, sans-serif',
+              fontSize: '2rem',
+              color: '#dc2626',
+              fontWeight: 800,
+              display: 'block',
+              marginBottom: '0.5rem'
+            }}>
+              01
+            </span>
+            <h3 style={{
+              fontFamily: 'Inter, sans-serif',
+              fontSize: '1.25rem',
+              color: '#000',
+              marginBottom: '0.75rem',
+              fontWeight: 700
+            }}>
+              Photography & Videography
+            </h3>
+            <p style={{
+              fontSize: '0.85rem',
+              color: '#737373',
+              lineHeight: 1.6,
+              textAlign: 'center'
+            }}>
+              Event & Corporate Photography, Wedding & Engagement Sessions, Fashion & Editorial Shoots, Sports Photography, Portrait & Lifestyle, Product & Commercial, Drone & Aerial
+            </p>
+          </div>
+
+          {/* Service 2 */}
+          <div style={{
+            marginBottom: '2rem',
+            textAlign: 'center'
+          }}>
+            <img
+              src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=400&q=80"
+              alt="Post-Production"
+              style={{
+                width: '100%',
+                maxWidth: '300px',
+                border: '2px solid #000',
+                marginBottom: '1rem',
+                filter: 'grayscale(100%)'
+              }}
+            />
+            <span style={{
+              fontFamily: 'Inter, sans-serif',
+              fontSize: '2rem',
+              color: '#dc2626',
+              fontWeight: 800,
+              display: 'block',
+              marginBottom: '0.5rem'
+            }}>
+              02
+            </span>
+            <h3 style={{
+              fontFamily: 'Inter, sans-serif',
+              fontSize: '1.25rem',
+              color: '#000',
+              marginBottom: '0.75rem',
+              fontWeight: 700
+            }}>
+              Post-Production & Specialized
+            </h3>
+            <p style={{
+              fontSize: '0.85rem',
+              color: '#737373',
+              lineHeight: 1.6,
+              textAlign: 'center'
+            }}>
+              Professional Editing & Color Grading, Photo Retouching, HDR Processing, Creative Direction, Fast Turnaround (24-48 hours), Custom Album & Print Design
+            </p>
+          </div>
+        </div>
+
+        {/* Mobile Footer */}
+        <div style={{
+          backgroundColor: '#000',
+          color: '#fff',
+          padding: '3rem 1.5rem'
+        }} />
+      </section>
+    );
+  }
+
+  // ==========================
+  // DESKTOP LAYOUT (Original)
+  // ==========================
   return (
-    <section ref={sectionRef} className="relative" style={{ color: '#000' }}>
+    <section ref={sectionRef} className="relative" style={{ color: '#000', width: '100%' }}>
 
       {/* Main Content */}
-      <main className="relative" style={{ backgroundColor: '#ffffff' }}>
+      <main className="relative" style={{ backgroundColor: '#ffffff', width: '100%' }}>
         {/* Hero Bottle Overlay Wrapper */}
         <div ref={bottleWrapperRef} className="hero-bottle-wrapper opacity-0">
           <img ref={bottleRef} src="/camera.png" alt="Mark Media Camera" className="hero-bottle" />

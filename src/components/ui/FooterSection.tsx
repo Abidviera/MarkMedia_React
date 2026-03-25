@@ -36,8 +36,8 @@ export default function FooterSection() {
     <footer className="footer-section">
       <style>{`
         .footer-section {
-          background-color: #000000;
-          border-top: 1px solid rgba(255, 255, 255, 0.1);
+          background-color: var(--bg-primary);
+          border-top: 1px solid var(--border-color);
           padding: 6rem 2rem 3rem;
         }
 
@@ -63,20 +63,20 @@ export default function FooterSection() {
           font-weight: 800;
           font-size: 6rem;
           line-height: 1;
-          color: #ffffff;
+          color: var(--text-primary);
           letter-spacing: -0.03em;
           margin-bottom: 2rem;
         }
 
         .footer-cta-title span {
-          color: rgba(255, 255, 255, 0.3);
+          color: var(--text-dim);
         }
 
         .footer-cta-btn {
           display: inline-block;
           padding: 1rem 2rem;
-          border: 1px solid #ffffff;
-          color: #ffffff;
+          border: 1px solid var(--text-primary);
+          color: var(--text-primary);
           font-family: 'Inter', sans-serif;
           font-size: 0.7rem;
           font-weight: 500;
@@ -87,8 +87,8 @@ export default function FooterSection() {
         }
 
         .footer-cta-btn:hover {
-          background-color: #ffffff;
-          color: #000000;
+          background-color: var(--text-primary);
+          color: var(--bg-primary);
         }
 
         .footer-links-grid {
@@ -105,7 +105,7 @@ export default function FooterSection() {
         .footer-link-title {
           font-family: 'Inter', sans-serif;
           font-size: 0.65rem;
-          color: rgba(255, 255, 255, 0.3);
+          color: var(--text-dim);
           text-transform: uppercase;
           letter-spacing: 0.2em;
           margin-bottom: 1.5rem;
@@ -123,18 +123,18 @@ export default function FooterSection() {
         .footer-link-item a {
           font-family: 'Inter', sans-serif;
           font-size: 0.9rem;
-          color: rgba(255, 255, 255, 0.6);
+          color: var(--text-muted);
           text-decoration: none;
           transition: color 0.3s ease;
         }
 
         .footer-link-item a:hover {
-          color: #dc2626;
+          color: var(--accent);
         }
 
         .footer-bottom {
           padding-top: 2rem;
-          border-top: 1px solid rgba(255, 255, 255, 0.1);
+          border-top: 1px solid var(--border-color);
           display: flex;
           justify-content: space-between;
           align-items: center;
@@ -150,14 +150,14 @@ export default function FooterSection() {
           font-family: 'Inter', sans-serif;
           font-size: 1.25rem;
           font-weight: 800;
-          color: #ffffff;
+          color: var(--text-primary);
           letter-spacing: -0.02em;
         }
 
         .footer-logo-sub {
           font-family: 'Inter', sans-serif;
           font-size: 0.65rem;
-          color: rgba(255, 255, 255, 0.3);
+          color: var(--text-dim);
           text-transform: uppercase;
           letter-spacing: 0.15em;
         }
@@ -165,7 +165,7 @@ export default function FooterSection() {
         .footer-copyright {
           font-family: 'Inter', sans-serif;
           font-size: 0.7rem;
-          color: rgba(255, 255, 255, 0.3);
+          color: var(--text-dim);
         }
 
         .footer-legal {
@@ -176,7 +176,7 @@ export default function FooterSection() {
         .footer-legal a {
           font-family: 'Inter', sans-serif;
           font-size: 0.65rem;
-          color: rgba(255, 255, 255, 0.3);
+          color: var(--text-dim);
           text-decoration: none;
           text-transform: uppercase;
           letter-spacing: 0.1em;
@@ -184,7 +184,7 @@ export default function FooterSection() {
         }
 
         .footer-legal a:hover {
-          color: rgba(255, 255, 255, 0.6);
+          color: var(--text-muted);
         }
 
         .footer-accent {
@@ -193,7 +193,7 @@ export default function FooterSection() {
           left: 0;
           right: 0;
           height: 1px;
-          background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.2), transparent);
+          background: linear-gradient(to right, transparent, var(--border-hover), transparent);
         }
 
         @media (max-width: 768px) {

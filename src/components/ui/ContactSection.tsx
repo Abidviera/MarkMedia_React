@@ -79,8 +79,8 @@ export default function ContactSection() {
       <style>{`
         .contact-section {
           position: relative;
-          background-color: #000000;
-          border-top: 1px solid rgba(255, 255, 255, 0.1);
+          background-color: var(--bg-primary);
+          border-top: 1px solid var(--border-color);
           padding: 8rem 2rem;
           overflow: hidden;
         }
@@ -95,7 +95,7 @@ export default function ContactSection() {
         .contact-header {
           margin-bottom: 5rem;
           padding-bottom: 3rem;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+          border-bottom: 1px solid var(--border-color);
         }
 
         .contact-eyebrow {
@@ -104,7 +104,7 @@ export default function ContactSection() {
           font-size: 0.75rem;
           text-transform: uppercase;
           letter-spacing: 0.3em;
-          color: #dc2626;
+          color: var(--accent);
           margin-bottom: 1rem;
         }
 
@@ -113,7 +113,7 @@ export default function ContactSection() {
           font-weight: 800;
           font-size: clamp(3rem, 8vw, 6rem);
           line-height: 1;
-          color: #ffffff;
+          color: var(--text-primary);
           letter-spacing: -0.03em;
           text-transform: uppercase;
           overflow: hidden;
@@ -125,7 +125,7 @@ export default function ContactSection() {
 
         .contact-heading-accent {
           color: transparent;
-          -webkit-text-stroke: 1px rgba(255, 255, 255, 0.5);
+          -webkit-text-stroke: 1px var(--border-hover);
         }
 
         .contact-grid {
@@ -142,7 +142,7 @@ export default function ContactSection() {
         .contact-subtitle {
           font-family: 'Inter', sans-serif;
           font-size: 1.1rem;
-          color: rgba(255, 255, 255, 0.5);
+          color: var(--text-dim);
           line-height: 1.8;
           margin-bottom: 3rem;
           max-width: 450px;
@@ -164,7 +164,7 @@ export default function ContactSection() {
         .contact-info-label {
           font-family: 'Inter', sans-serif;
           font-size: 0.65rem;
-          color: rgba(255, 255, 255, 0.3);
+          color: var(--text-dim);
           text-transform: uppercase;
           letter-spacing: 0.2em;
         }
@@ -172,27 +172,27 @@ export default function ContactSection() {
         .contact-info-value {
           font-family: 'Inter', sans-serif;
           font-size: 1.25rem;
-          color: #ffffff;
+          color: var(--text-primary);
           text-decoration: none;
           transition: color 0.3s ease;
           display: inline-block;
         }
 
         .contact-info-value:hover {
-          color: #dc2626;
+          color: var(--accent);
         }
 
         .contact-info-text {
           font-family: 'Inter', sans-serif;
           font-size: 1.25rem;
-          color: #ffffff;
+          color: var(--text-primary);
           line-height: 1.6;
         }
 
         .contact-info-sub {
           font-family: 'Inter', sans-serif;
           font-size: 0.9rem;
-          color: rgba(255, 255, 255, 0.4);
+          color: var(--text-dim);
         }
 
         .contact-social {
@@ -200,19 +200,19 @@ export default function ContactSection() {
           gap: 1.5rem;
           margin-top: auto;
           padding-top: 2rem;
-          border-top: 1px solid rgba(255, 255, 255, 0.1);
+          border-top: 1px solid var(--border-color);
         }
 
         .contact-social-link {
           font-family: 'Inter', sans-serif;
           font-size: 0.7rem;
-          color: rgba(255, 255, 255, 0.4);
+          color: var(--text-dim);
           text-decoration: none;
           text-transform: uppercase;
           letter-spacing: 0.15em;
           transition: all 0.3s ease;
           padding: 0.5rem 1rem;
-          border: 1px solid rgba(255, 255, 255, 0.1);
+          border: 1px solid var(--border-color);
           position: relative;
           overflow: hidden;
         }
@@ -221,7 +221,7 @@ export default function ContactSection() {
           content: '';
           position: absolute;
           inset: 0;
-          background: #dc2626;
+          background: var(--accent);
           transform: translateY(100%);
           transition: transform 0.3s ease;
           z-index: 0;
@@ -233,8 +233,8 @@ export default function ContactSection() {
         }
 
         .contact-social-link:hover {
-          color: #ffffff;
-          border-color: #dc2626;
+          color: var(--text-primary);
+          border-color: var(--accent);
         }
 
         .contact-social-link:hover::before {
@@ -243,7 +243,7 @@ export default function ContactSection() {
 
         .contact-right {
           padding-left: 4rem;
-          border-left: 1px solid rgba(255, 255, 255, 0.1);
+          border-left: 1px solid var(--border-color);
         }
 
         .contact-form {
@@ -261,7 +261,7 @@ export default function ContactSection() {
         .form-label {
           font-family: 'Inter', sans-serif;
           font-size: 0.65rem;
-          color: rgba(255, 255, 255, 0.5);
+          color: var(--text-dim);
           text-transform: uppercase;
           letter-spacing: 0.2em;
         }
@@ -273,23 +273,23 @@ export default function ContactSection() {
           padding: 1rem 0;
           background-color: transparent;
           border: none;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+          border-bottom: 1px solid var(--border-color);
           font-family: 'Inter', sans-serif;
           font-size: 1rem;
-          color: #ffffff;
+          color: var(--text-primary);
           outline: none;
           transition: border-color 0.3s ease;
         }
 
         .form-input::placeholder,
         .form-textarea::placeholder {
-          color: rgba(255, 255, 255, 0.2);
+          color: var(--text-dim);
         }
 
         .form-input:focus,
         .form-select:focus,
         .form-textarea:focus {
-          border-bottom-color: #dc2626;
+          border-bottom-color: var(--accent);
         }
 
         .form-select {
@@ -302,8 +302,8 @@ export default function ContactSection() {
         }
 
         .form-select option {
-          background: #000000;
-          color: #ffffff;
+          background: var(--bg-primary);
+          color: var(--text-primary);
         }
 
         .form-textarea {
@@ -316,8 +316,8 @@ export default function ContactSection() {
           width: 100%;
           padding: 1.5rem;
           background-color: transparent;
-          color: #ffffff;
-          border: 1px solid #ffffff;
+          color: var(--text-primary);
+          border: 1px solid var(--text-primary);
           font-family: 'Inter', sans-serif;
           font-size: 0.7rem;
           font-weight: 600;
@@ -333,7 +333,7 @@ export default function ContactSection() {
           content: '';
           position: absolute;
           inset: 0;
-          background: #dc2626;
+          background: var(--accent);
           transform: translateX(-100%);
           transition: transform 0.4s ease;
           z-index: 0;
@@ -345,8 +345,8 @@ export default function ContactSection() {
         }
 
         .form-submit:hover {
-          border-color: #dc2626;
-          color: #ffffff;
+          border-color: var(--accent);
+          color: var(--text-primary);
         }
 
         .form-submit:hover::before {
@@ -365,7 +365,7 @@ export default function ContactSection() {
           font-family: 'Inter', sans-serif;
           font-size: 30vw;
           font-weight: 800;
-          color: #ffffff;
+          color: var(--text-primary);
           opacity: 0.01;
           letter-spacing: -0.05em;
           pointer-events: none;

@@ -59,8 +59,8 @@ export default function AboutMark() {
     <section ref={sectionRef} className="craft-section">
       <style>{`
         .craft-section {
-          background-color: #000000;
-          color: #ffffff;
+          background-color: var(--bg-primary);
+          color: var(--text-primary);
           overflow: hidden;
         }
 
@@ -71,7 +71,7 @@ export default function AboutMark() {
           justify-content: center;
           padding: 8rem 2rem 4rem;
           position: relative;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+          border-bottom: 1px solid var(--border-color);
         }
 
         .craft-hero-content {
@@ -106,14 +106,14 @@ export default function AboutMark() {
 
         .craft-heading-accent {
           color: transparent;
-          -webkit-text-stroke: 1px #ffffff;
+          -webkit-text-stroke: 1px var(--text-primary);
         }
 
         .craft-subheading {
           font-family: 'Inter', sans-serif;
           font-size: clamp(1rem, 2vw, 1.5rem);
           font-weight: 300;
-          color: rgba(255, 255, 255, 0.6);
+          color: var(--text-muted);
           max-width: 600px;
           line-height: 1.6;
           margin-top: 2rem;
@@ -126,7 +126,7 @@ export default function AboutMark() {
           transform: translateY(-50%);
           width: 40%;
           max-width: 500px;
-          opacity: 0.3;
+          opacity: var(--camera-opacity, 0.3);
         }
 
         .craft-camera-wrapper img {
@@ -137,7 +137,7 @@ export default function AboutMark() {
         /* Stats Section */
         .craft-stats {
           padding: 4rem 2rem;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+          border-bottom: 1px solid var(--border-color);
         }
 
         .craft-stats-grid {
@@ -173,7 +173,7 @@ export default function AboutMark() {
           font-weight: 500;
           text-transform: uppercase;
           letter-spacing: 0.2em;
-          color: rgba(255, 255, 255, 0.5);
+          color: var(--text-dim);
         }
 
         /* Services Section */
@@ -202,7 +202,7 @@ export default function AboutMark() {
         .craft-services-subtitle {
           font-family: 'Inter', sans-serif;
           font-size: 1rem;
-          color: rgba(255, 255, 255, 0.5);
+          color: var(--text-dim);
           max-width: 400px;
         }
 
@@ -212,11 +212,11 @@ export default function AboutMark() {
           display: grid;
           grid-template-columns: repeat(3, 1fr);
           gap: 1px;
-          background-color: rgba(255, 255, 255, 0.1);
+          background-color: var(--border-color);
         }
 
         .craft-service-card {
-          background-color: #000000;
+          background-color: var(--bg-primary);
           padding: 3rem 2rem;
           position: relative;
           overflow: hidden;
@@ -241,7 +241,7 @@ export default function AboutMark() {
         }
 
         .craft-service-card:hover {
-          background-color: #0a0a0a;
+          background-color: var(--bg-secondary);
         }
 
         .craft-service-number {
@@ -265,7 +265,7 @@ export default function AboutMark() {
         .craft-service-desc {
           font-family: 'Inter', sans-serif;
           font-size: 0.875rem;
-          color: rgba(255, 255, 255, 0.5);
+          color: var(--text-dim);
           line-height: 1.7;
         }
 
@@ -293,8 +293,8 @@ export default function AboutMark() {
         .craft-cta-btn {
           display: inline-block;
           padding: 1.25rem 3rem;
-          background-color: #dc2626;
-          color: #ffffff;
+          background-color: var(--accent);
+          color: var(--text-primary);
           font-family: 'Inter', sans-serif;
           font-size: 0.875rem;
           font-weight: 600;
@@ -322,7 +322,7 @@ export default function AboutMark() {
         }
 
         .craft-cta-btn:hover {
-          background-color: #b91c1c;
+          background-color: var(--accent-hover);
           transform: translateY(-2px);
         }
 
@@ -347,7 +347,7 @@ export default function AboutMark() {
 
           .craft-stat {
             border-right: none;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid var(--border-color);
           }
 
           .craft-services-grid {

@@ -30,8 +30,8 @@ export default function InsightsSection() {
     <section className="insights-section">
       <style>{`
         .insights-section {
-          background-color: #000000;
-          border-top: 1px solid #000000;
+          background-color: var(--bg-primary);
+          border-top: 1px solid var(--border-color);
           padding: 6rem 2rem;
         }
 
@@ -46,7 +46,7 @@ export default function InsightsSection() {
           align-items: flex-end;
           margin-bottom: 4rem;
           padding-bottom: 2rem;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+          border-bottom: 1px solid var(--border-color);
         }
 
         .insights-title-group {
@@ -61,7 +61,7 @@ export default function InsightsSection() {
           font-size: 0.75rem;
           text-transform: uppercase;
           letter-spacing: 0.2em;
-          color: #dc2626;
+          color: var(--accent);
         }
 
         .insights-main-title {
@@ -69,14 +69,14 @@ export default function InsightsSection() {
           font-weight: 800;
           font-size: 8rem;
           line-height: 1;
-          color: #ffffff;
+          color: var(--text-primary);
           letter-spacing: -0.03em;
         }
 
         .insights-view-all {
           font-family: 'Inter', sans-serif;
           font-size: 0.7rem;
-          color: rgba(255, 255, 255, 0.5);
+          color: var(--text-dim);
           text-decoration: none;
           text-transform: uppercase;
           letter-spacing: 0.15em;
@@ -84,7 +84,7 @@ export default function InsightsSection() {
         }
 
         .insights-view-all:hover {
-          color: #ffffff;
+          color: var(--text-primary);
         }
 
         .insights-grid {
@@ -110,7 +110,7 @@ export default function InsightsSection() {
         .insight-category {
           font-family: 'Inter', sans-serif;
           font-size: 0.65rem;
-          color: rgba(255, 255, 255, 0.4);
+          color: var(--text-dim);
           text-transform: uppercase;
           letter-spacing: 0.2em;
         }
@@ -118,14 +118,14 @@ export default function InsightsSection() {
         .insight-dot {
           width: 4px;
           height: 4px;
-          background-color: rgba(255, 255, 255, 0.2);
+          background-color: var(--border-color);
           border-radius: 50%;
         }
 
         .insight-read-time {
           font-family: 'Inter', sans-serif;
           font-size: 0.65rem;
-          color: rgba(255, 255, 255, 0.3);
+          color: var(--text-dim);
           text-transform: uppercase;
           letter-spacing: 0.1em;
         }
@@ -134,20 +134,20 @@ export default function InsightsSection() {
           font-family: 'Inter', sans-serif;
           font-size: 1.25rem;
           font-weight: 700;
-          color: #ffffff;
+          color: var(--text-primary);
           line-height: 1.3;
           margin-bottom: 1rem;
           transition: color 0.3s ease;
         }
 
         .insight-title:hover {
-          color: rgba(255, 255, 255, 0.7);
+          color: var(--text-muted);
         }
 
         .insight-excerpt {
           font-family: 'Inter', sans-serif;
           font-size: 0.95rem;
-          color: rgba(255, 255, 255, 0.5);
+          color: var(--text-dim);
           line-height: 1.7;
           margin-bottom: 1.5rem;
         }
@@ -161,7 +161,7 @@ export default function InsightsSection() {
         .insight-date {
           font-family: 'Inter', sans-serif;
           font-size: 0.65rem;
-          color: rgba(255, 255, 255, 0.3);
+          color: var(--text-dim);
           text-transform: uppercase;
           letter-spacing: 0.15em;
         }
@@ -169,14 +169,14 @@ export default function InsightsSection() {
         .insight-read-link {
           font-family: 'Inter', sans-serif;
           font-size: 0.65rem;
-          color: rgba(255, 255, 255, 0.5);
+          color: var(--text-dim);
           text-transform: uppercase;
           letter-spacing: 0.1em;
           transition: color 0.3s ease;
         }
 
         .insight-read-link:hover {
-          color: #ffffff;
+          color: var(--text-primary);
         }
 
         .insights-newsletter {
@@ -193,14 +193,14 @@ export default function InsightsSection() {
           font-family: 'Inter', sans-serif;
           font-size: 1.5rem;
           font-weight: 700;
-          color: #ffffff;
+          color: var(--text-primary);
           margin-bottom: 0.5rem;
         }
 
         .newsletter-text p {
           font-family: 'Inter', sans-serif;
           font-size: 0.95rem;
-          color: rgba(255, 255, 255, 0.5);
+          color: var(--text-dim);
         }
 
         .newsletter-form {
@@ -211,8 +211,8 @@ export default function InsightsSection() {
         .newsletter-input {
           padding: 1rem 1.5rem;
           background-color: transparent;
-          border: 1px solid rgba(255, 255, 255, 0.2);
-          color: #ffffff;
+          border: 1px solid var(--border-color);
+          color: var(--text-primary);
           font-family: 'Inter', sans-serif;
           font-size: 0.7rem;
           text-transform: uppercase;
@@ -222,18 +222,18 @@ export default function InsightsSection() {
         }
 
         .newsletter-input::placeholder {
-          color: rgba(255, 255, 255, 0.3);
+          color: var(--text-dim);
         }
 
         .newsletter-input:focus {
-          border-color: #ffffff;
+          border-color: var(--text-primary);
         }
 
         .newsletter-btn {
           padding: 1rem 2rem;
-          background-color: #ffffff;
-          color: #000000;
-          border: 2px solid #ffffff;
+          background-color: var(--text-primary);
+          color: var(--bg-primary);
+          border: 2px solid var(--text-primary);
           font-family: 'Inter', sans-serif;
           font-size: 0.7rem;
           font-weight: 600;
@@ -244,9 +244,9 @@ export default function InsightsSection() {
         }
 
         .newsletter-btn:hover {
-          background-color: #dc2626;
-          border-color: #dc2626;
-          color: #ffffff;
+          background-color: var(--accent);
+          border-color: var(--accent);
+          color: var(--text-primary);
         }
 
         @media (max-width: 768px) {
@@ -270,7 +270,7 @@ export default function InsightsSection() {
           }
 
           .insight-card {
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: 1px solid var(--border-color);
             padding-top: 2rem;
           }
 

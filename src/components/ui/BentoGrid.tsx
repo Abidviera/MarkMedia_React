@@ -134,8 +134,8 @@ export default function BentoGrid() {
       <style>{`
         .bento-section {
           position: relative;
-          background-color: #000000;
-          border-top: 1px solid rgba(255, 255, 255, 0.1);
+          background-color: var(--bg-primary);
+          border-top: 1px solid var(--border-color);
           padding: 8rem 2rem;
           overflow: hidden;
         }
@@ -153,7 +153,7 @@ export default function BentoGrid() {
           align-items: flex-end;
           margin-bottom: 5rem;
           padding-bottom: 3rem;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+          border-bottom: 1px solid var(--border-color);
         }
 
         .bento-title-group {
@@ -176,7 +176,7 @@ export default function BentoGrid() {
           font-weight: 800;
           font-size: clamp(4rem, 10vw, 8rem);
           line-height: 1;
-          color: #ffffff;
+          color: var(--text-primary);
           letter-spacing: -0.03em;
           text-transform: uppercase;
           overflow: hidden;
@@ -188,13 +188,13 @@ export default function BentoGrid() {
 
         .bento-heading-accent {
           color: transparent;
-          -webkit-text-stroke: 1px rgba(255, 255, 255, 0.5);
+          -webkit-text-stroke: 1px var(--border-hover);
         }
 
         .bento-view-all {
           font-family: 'Inter', sans-serif;
           font-size: 0.7rem;
-          color: rgba(255, 255, 255, 0.5);
+          color: var(--text-dim);
           text-decoration: none;
           text-transform: uppercase;
           letter-spacing: 0.15em;
@@ -217,7 +217,7 @@ export default function BentoGrid() {
         }
 
         .bento-view-all:hover {
-          color: #ffffff;
+          color: var(--text-primary);
         }
 
         .bento-view-all:hover::after {
@@ -261,7 +261,7 @@ export default function BentoGrid() {
           width: 100%;
           height: 100%;
           overflow: hidden;
-          background-color: rgba(255, 255, 255, 0.02);
+          background-color: var(--card-bg);
         }
 
         .bento-item-img {
@@ -318,7 +318,7 @@ export default function BentoGrid() {
         .bento-category {
           font-family: 'Inter', sans-serif;
           font-size: 0.6rem;
-          color: rgba(255, 255, 255, 0.5);
+          color: var(--text-dim);
           text-transform: uppercase;
           letter-spacing: 0.2em;
           margin-bottom: 0.75rem;
@@ -336,7 +336,7 @@ export default function BentoGrid() {
           font-family: 'Inter', sans-serif;
           font-size: 1.5rem;
           font-weight: 700;
-          color: #ffffff;
+          color: var(--text-primary);
           line-height: 1.2;
           margin-bottom: 0.5rem;
         }
@@ -371,7 +371,7 @@ export default function BentoGrid() {
         }
 
         .bento-item:hover .bento-border {
-          border-color: rgba(255, 255, 255, 0.15);
+          border-color: var(--card-border-hover);
         }
 
         /* Animated corner lines */
@@ -466,7 +466,7 @@ export default function BentoGrid() {
           font-family: 'Inter', sans-serif;
           font-size: 25vw;
           font-weight: 800;
-          color: #ffffff;
+          color: var(--text-primary);
           white-space: nowrap;
           opacity: 0.02;
           letter-spacing: -0.05em;

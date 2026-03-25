@@ -382,7 +382,7 @@ export default function AwardsSection() {
       
 
       {/* Background decorative elements */}
-      <div className="awards-bg-element" style={{ position: 'absolute', top: '10%', left: '5%', width: '300px', height: '300px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(220,38,38,0.1) 0%, transparent 70%)', filter: 'blur(60px)' }} />
+      <div className="awards-bg-element" style={{ position: 'absolute', top: '10%', left: '5%', width: '300px', height: '300px', borderRadius: '50%', background: `radial-gradient(circle, rgba(var(--accent-rgb), 0.1) 0%, transparent 70%)`, filter: 'blur(60px)' }} />
       <div className="awards-bg-element" style={{ position: 'absolute', bottom: '20%', right: '10%', width: '400px', height: '400px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(249,115,22,0.1) 0%, transparent 70%)', filter: 'blur(80px)' }} />
 
       <motion.div
@@ -428,8 +428,8 @@ export default function AwardsSection() {
       <style>{`
         .awards-section {
           position: relative;
-          background: linear-gradient(180deg, #000000 0%, #0a0a0a 50%, #000000 100%);
-          border-top: 1px solid rgba(255, 255, 255, 0.1);
+          background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, var(--bg-primary) 100%);
+          border-top: 1px solid var(--border-color);
           padding: 8rem 2rem;
           overflow: hidden;
           min-height: 100vh;
@@ -462,7 +462,7 @@ export default function AwardsSection() {
           font-size: 0.75rem;
           text-transform: uppercase;
           letter-spacing: 0.3em;
-          color: #dc2626;
+          color: var(--accent);
           margin-bottom: 1.5rem;
         }
 
@@ -471,7 +471,7 @@ export default function AwardsSection() {
           font-weight: 800;
           font-size: clamp(3rem, 10vw, 7rem);
           line-height: 0.9;
-          color: #ffffff;
+          color: var(--text-primary);
           letter-spacing: -0.03em;
           text-transform: uppercase;
           display: flex;
@@ -484,14 +484,14 @@ export default function AwardsSection() {
 
         .awards-heading-accent {
           color: transparent;
-          -webkit-text-stroke: 2px rgba(255, 255, 255, 0.5);
+          -webkit-text-stroke: 2px var(--border-hover);
           position: relative;
         }
 
         .awards-subtitle {
           font-family: 'Inter', sans-serif;
           font-size: 1.1rem;
-          color: rgba(255, 255, 255, 0.5);
+          color: var(--text-dim);
           margin-top: 2rem;
           max-width: 500px;
           margin-left: auto;
@@ -505,8 +505,8 @@ export default function AwardsSection() {
           gap: 2rem;
           margin-bottom: 5rem;
           padding: 3rem;
-          background: rgba(255, 255, 255, 0.02);
-          border: 1px solid rgba(255, 255, 255, 0.05);
+          background: var(--card-bg);
+          border: 1px solid var(--card-border);
           border-radius: 1rem;
           backdrop-filter: blur(10px);
         }
@@ -515,8 +515,8 @@ export default function AwardsSection() {
           position: relative;
           text-align: center;
           padding: 2rem 1.5rem;
-          background: rgba(255, 255, 255, 0.03);
-          border: 1px solid rgba(220, 38, 38, 0.15);
+          background: var(--card-bg);
+          border: 1px solid var(--card-border);
           border-radius: 1rem;
           transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
           cursor: default;
@@ -524,17 +524,17 @@ export default function AwardsSection() {
         }
 
         .achievement-item:hover {
-          background: rgba(220, 38, 38, 0.08);
-          border-color: rgba(220, 38, 38, 0.4);
+          background: var(--card-bg);
+          border-color: var(--card-border-hover);
           transform: translateY(-5px);
-          box-shadow: 0 20px 40px -12px rgba(220, 38, 38, 0.3);
+          box-shadow: 0 20px 40px -12px var(--shadow);
         }
 
         .achievement-icon {
           width: 50px;
           height: 50px;
           margin: 0 auto 1rem;
-          background: rgba(220, 38, 38, 0.15);
+          background: var(--card-bg);
           border-radius: 50%;
           display: flex;
           align-items: center;
@@ -546,7 +546,7 @@ export default function AwardsSection() {
           font-family: 'Inter', sans-serif;
           font-size: clamp(2.5rem, 5vw, 4rem);
           font-weight: 800;
-          background: linear-gradient(135deg, #dc2626, #f97316);
+          background: linear-gradient(135deg, var(--accent), #f97316);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
@@ -557,7 +557,7 @@ export default function AwardsSection() {
         .achievement-label {
           font-family: 'Inter', sans-serif;
           font-size: 0.75rem;
-          color: rgba(255, 255, 255, 0.6);
+          color: var(--text-muted);
           text-transform: uppercase;
           letter-spacing: 0.15em;
         }
@@ -587,16 +587,16 @@ export default function AwardsSection() {
 
         .award-card-inner {
           position: relative;
-          background: rgba(255, 255, 255, 0.02);
-          border: 1px solid rgba(255, 255, 255, 0.05);
+          background: var(--card-bg);
+          border: 1px solid var(--card-border);
           border-radius: 1rem;
           overflow: hidden;
           transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .award-card:hover .award-card-inner {
-          border-color: rgba(220, 38, 38, 0.3);
-          box-shadow: 0 25px 50px -12px rgba(220, 38, 38, 0.25);
+          border-color: var(--card-border-hover);
+          box-shadow: 0 25px 50px -12px var(--shadow);
         }
 
         .award-image-container {
@@ -644,14 +644,14 @@ export default function AwardsSection() {
           font-family: 'Inter', sans-serif;
           font-size: 1.25rem;
           font-weight: 700;
-          color: #ffffff;
+          color: var(--text-primary);
           margin: 0.5rem 0;
         }
 
         .award-organization {
           font-family: 'Inter', sans-serif;
           font-size: 0.8rem;
-          color: rgba(255, 255, 255, 0.5);
+          color: var(--text-dim);
         }
 
         .award-badge {
@@ -660,7 +660,7 @@ export default function AwardsSection() {
           right: 1rem;
           width: 40px;
           height: 40px;
-          background: rgba(0, 0, 0, 0.7);
+          background: var(--shadow);
           border-radius: 50%;
           display: flex;
           align-items: center;

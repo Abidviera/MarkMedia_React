@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: ['data-theme', 'dark'],
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
@@ -9,7 +10,7 @@ export default {
       colors: {
         'lens-red': '#E8102A',
         'lens-red-dim': '#C0001F',
-        'lens-black': '#080808',
+        'lens-black': 'var(--bg-primary)',
         'lens-off-white': '#F5F5F3',
         'lens-gray-light': '#EBEBEB',
         'lens-gray-mid': '#999999',

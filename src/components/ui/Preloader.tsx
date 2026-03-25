@@ -124,7 +124,7 @@ export default function Preloader() {
           position: fixed;
           inset: 0;
           z-index: 99999;
-          background: #000000;
+          background: var(--bg-primary);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -151,20 +151,20 @@ export default function Preloader() {
           font-family: 'Inter', sans-serif;
           font-size: clamp(2.5rem, 8vw, 5rem);
           font-weight: 800;
-          color: #ffffff;
+          color: var(--text-primary);
           letter-spacing: -0.02em;
           display: inline-block;
         }
 
         .preloader-word-accent .preloader-letter {
           color: transparent;
-          -webkit-text-stroke: 1px rgba(255, 255, 255, 0.5);
+          -webkit-text-stroke: 1px var(--border-color);
         }
 
         .preloader-progress-wrapper {
           width: 200px;
           height: 2px;
-          background: rgba(255, 255, 255, 0.1);
+          background: var(--border-color);
           position: relative;
           overflow: hidden;
         }
@@ -195,7 +195,7 @@ export default function Preloader() {
           font-family: 'Inter', sans-serif;
           font-size: 0.65rem;
           font-weight: 500;
-          color: rgba(255, 255, 255, 0.4);
+          color: var(--text-dim);
           letter-spacing: 0.3em;
           text-transform: uppercase;
           display: flex;
@@ -211,7 +211,7 @@ export default function Preloader() {
         .preloader-dot {
           width: 3px;
           height: 3px;
-          background: rgba(255, 255, 255, 0.4);
+          background: var(--text-dim);
           border-radius: 50%;
           opacity: 1;
         }
@@ -221,7 +221,7 @@ export default function Preloader() {
           position: absolute;
           width: 60px;
           height: 60px;
-          border: 1px solid rgba(255, 255, 255, 0.1);
+          border: 1px solid var(--border-color);
         }
 
         .preloader-corner-tl {

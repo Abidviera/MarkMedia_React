@@ -358,7 +358,7 @@ function StatCard({ stat, index }: { stat: typeof stats[0]; index: number }) {
         viewport={{ once: true }}
         transition={{ type: 'spring', stiffness: 200, damping: 15, delay: 0.3 + index * 0.12 }}
       >
-        <div className="stat-icon" style={{ color: '#ffffff' }}>
+        <div className="stat-icon" style={{ color: 'var(--text-primary)' }}>
           {stat.icon}
         </div>
       </motion.div>
@@ -468,7 +468,6 @@ export default function StatsSection() {
 
       {/* Background Gradient Overlays */}
       <div className="stats-bg-gradient-top" />
-      <div className="stats-bg-gradient-bottom" />
 
       {/* Animated Background Elements */}
       <motion.div
@@ -560,8 +559,8 @@ export default function StatsSection() {
       <style>{`
         .stats-section {
           position: relative;
-          background: #000000;
-          border-top: 1px solid rgba(255, 255, 255, 0.05);
+          background: var(--bg-primary);
+          border-top: 1px solid var(--border-color);
           padding: 10rem 2rem;
           overflow: hidden;
           min-height: 100vh;
@@ -581,18 +580,7 @@ export default function StatsSection() {
           left: 0;
           right: 0;
           height: 200px;
-          background: linear-gradient(to bottom, #000000, transparent);
-          z-index: 1;
-          pointer-events: none;
-        }
-
-        .stats-bg-gradient-bottom {
-          position: absolute;
-          bottom: 0;
-          left: 0;
-          right: 0;
-          height: 200px;
-          background: linear-gradient(to top, #000000, transparent);
+          background: linear-gradient(to bottom, var(--bg-primary), transparent);
           z-index: 1;
           pointer-events: none;
         }
@@ -662,7 +650,7 @@ export default function StatsSection() {
           font-weight: 800;
           font-size: clamp(3.5rem, 10vw, 7rem);
           line-height: 0.9;
-          color: #ffffff;
+          color: var(--text-primary);
           letter-spacing: -0.03em;
           text-transform: uppercase;
           display: flex;
@@ -676,13 +664,13 @@ export default function StatsSection() {
 
         .stats-heading-accent {
           color: transparent;
-          -webkit-text-stroke: 2px rgba(255, 255, 255, 0.4);
+          -webkit-text-stroke: 2px var(--border-hover);
         }
 
         .stats-subtitle {
           font-family: 'Inter', sans-serif;
           font-size: 1.15rem;
-          color: rgba(255, 255, 255, 0.5);
+          color: var(--text-dim);
           max-width: 600px;
           margin: 0 auto;
           line-height: 1.7;
@@ -700,8 +688,8 @@ export default function StatsSection() {
         .stat-card {
           position: relative;
           padding: 2.5rem 2rem;
-          background: rgba(255, 255, 255, 0.02);
-          border: 1px solid rgba(255, 255, 255, 0.06);
+          background: var(--card-bg);
+          border: 1px solid var(--card-border);
           backdrop-filter: blur(20px);
           cursor: default;
           overflow: hidden;
@@ -717,9 +705,9 @@ export default function StatsSection() {
         }
 
         .stat-card:hover {
-          border-color: rgba(220, 38, 38, 0.3);
+          border-color: var(--card-border-hover);
           box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5),
-                      0 0 0 1px rgba(220, 38, 38, 0.1);
+                      0 0 0 1px rgba(var(--accent-rgb), 0.1);
         }
 
         .stat-card-bg {
@@ -779,7 +767,7 @@ export default function StatsSection() {
           font-family: 'Inter', sans-serif;
           font-size: clamp(3rem, 6vw, 4.5rem);
           font-weight: 800;
-          color: #ffffff;
+          color: var(--text-primary);
           line-height: 1;
           letter-spacing: -0.02em;
         }
@@ -796,7 +784,7 @@ export default function StatsSection() {
           font-family: 'Inter', sans-serif;
           font-size: 1.1rem;
           font-weight: 600;
-          color: #ffffff;
+          color: var(--text-primary);
           text-transform: uppercase;
           letter-spacing: 0.08em;
           margin: 0 0 0.5rem;
@@ -805,7 +793,7 @@ export default function StatsSection() {
         .stat-description {
           font-family: 'Inter', sans-serif;
           font-size: 0.9rem;
-          color: rgba(255, 255, 255, 0.4);
+          color: var(--text-dim);
           line-height: 1.6;
           margin: 0;
         }
@@ -841,7 +829,7 @@ export default function StatsSection() {
         /* CTA Section */
         .stats-cta {
           padding-top: 4rem;
-          border-top: 1px solid rgba(255, 255, 255, 0.05);
+          border-top: 1px solid var(--border-color);
         }
 
         .stats-cta-content {
@@ -861,7 +849,7 @@ export default function StatsSection() {
         .cta-line {
           width: 60px;
           height: 1px;
-          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+          background: linear-gradient(90deg, transparent, var(--border-hover), transparent);
         }
 
         .cta-dot {
@@ -875,7 +863,7 @@ export default function StatsSection() {
           font-family: 'Inter', sans-serif;
           font-size: 1.5rem;
           font-weight: 300;
-          color: rgba(255, 255, 255, 0.7);
+          color: var(--text-muted);
           margin-bottom: 2.5rem;
           line-height: 1.6;
         }
@@ -887,7 +875,7 @@ export default function StatsSection() {
           padding: 1.25rem 3rem;
           background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
           border: none;
-          color: #ffffff;
+          color: var(--text-primary);
           font-family: 'Inter', sans-serif;
           font-size: 0.8rem;
           font-weight: 600;
@@ -912,8 +900,8 @@ export default function StatsSection() {
           font-family: 'Inter', sans-serif;
           font-size: 25vw;
           font-weight: 800;
-          color: #ffffff;
-          opacity: 0.015;
+          color: var(--text-primary);
+          opacity: 0.025;
           letter-spacing: -0.05em;
           user-select: none;
           pointer-events: none;

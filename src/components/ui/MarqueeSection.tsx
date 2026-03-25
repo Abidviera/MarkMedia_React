@@ -35,9 +35,9 @@ export default function MarqueeSection() {
           position: relative;
           padding: 4rem 0;
           overflow: hidden;
-          border-top: 1px solid rgba(255, 255, 255, 0.1);
-          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-          background-color: #000000;
+          border-top: 1px solid var(--border-color);
+          border-bottom: 1px solid var(--border-color);
+          background-color: var(--bg-primary);
           contain: layout style;
         }
 
@@ -72,7 +72,7 @@ export default function MarqueeSection() {
         .marquee-text {
           font-family: 'Inter', sans-serif;
           font-size: 0.7rem;
-          color: rgba(255, 255, 255, 0.7);
+          color: var(--text-muted);
           text-transform: uppercase;
           letter-spacing: 0.25em;
           font-weight: 500;
@@ -84,7 +84,7 @@ export default function MarqueeSection() {
         .marquee-dot {
           width: 6px;
           height: 6px;
-          background-color: rgba(255, 255, 255, 0.3);
+          background-color: var(--text-dim);
           border-radius: 50%;
           flex-shrink: 0;
         }
@@ -100,12 +100,12 @@ export default function MarqueeSection() {
 
         .marquee-fade-left {
           left: 0;
-          background: linear-gradient(to right, #000000, transparent);
+          background: linear-gradient(to right, var(--bg-primary), transparent);
         }
 
         .marquee-fade-right {
           right: 0;
-          background: linear-gradient(to left, #000000, transparent);
+          background: linear-gradient(to left, var(--bg-primary), transparent);
         }
 
         @keyframes marquee-scroll {

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, Suspense, useMemo } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Float, MeshDistortMaterial, Environment, Stars, Sparkles, Text, useTexture } from '@react-three/drei';
+import { Float, MeshDistortMaterial, Environment, Stars, Sparkles } from '@react-three/drei';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { motion, AnimatePresence, useScroll, useTransform, useSpring } from 'framer-motion';
@@ -283,21 +283,10 @@ export default function Gallery3DSection() {
 
   return (
     <section ref={sectionRef} className="gallery-section">
-      {/* 3D Background */}
-      <Canvas
-        className="gallery-canvas"
-        camera={{ position: [0, 0, 8], fov: 75 }}
-        dpr={[1, 2]}
-        gl={{ antialias: true }}
-      >
-        <Suspense fallback={null}>
-          <Scene3D />
-        </Suspense>
-      </Canvas>
+    
 
       {/* Gradient Overlays */}
       <div className="gallery-gradient-top" />
-      <div className="gallery-gradient-bottom" />
 
       <motion.div className="gallery-container" style={{ y }}>
         {/* Header */}
@@ -400,7 +389,7 @@ export default function Gallery3DSection() {
         .gallery-section {
           position: relative;
           min-height: 100vh;
-          background: #000000;
+          background: var(--bg-primary);
           overflow: hidden;
         }
 
@@ -416,20 +405,12 @@ export default function Gallery3DSection() {
           left: 0;
           right: 0;
           height: 150px;
-          background: linear-gradient(to bottom, #000000, transparent);
+          background: transparent;
           z-index: 1;
           pointer-events: none;
         }
-
-        .gallery-gradient-bottom {
-          position: fixed;
-          bottom: 0;
-          left: 0;
-          right: 0;
-          height: 150px;
-          background: linear-gradient(to top, #000000, transparent);
-          z-index: 1;
-          pointer-events: none;
+        [data-theme="dark"] .gallery-gradient-top {
+          background: linear-gradient(to bottom, var(--bg-primary), transparent);
         }
 
         .gallery-container {
@@ -462,7 +443,7 @@ export default function Gallery3DSection() {
           font-weight: 800;
           font-size: clamp(3rem, 10vw, 7rem);
           line-height: 0.9;
-          color: #ffffff;
+          color: var(--text-primary);
           letter-spacing: -0.03em;
           text-transform: uppercase;
           display: flex;
@@ -475,13 +456,13 @@ export default function Gallery3DSection() {
 
         .gallery-title-accent {
           color: transparent;
-          -webkit-text-stroke: 2px rgba(255, 255, 255, 0.5);
+          -webkit-text-stroke: 2px var(--border-hover);
         }
 
         .gallery-subtitle {
           font-family: 'Inter', sans-serif;
           font-size: 1.1rem;
-          color: rgba(255, 255, 255, 0.5);
+          color: var(--text-dim);
           margin-top: 2rem;
           max-width: 500px;
           margin-left: auto;
@@ -500,8 +481,8 @@ export default function Gallery3DSection() {
         .gallery-filter {
           padding: 0.75rem 1.5rem;
           background: transparent;
-          border: 1px solid rgba(255, 255, 255, 0.15);
-          color: rgba(255, 255, 255, 0.5);
+          border: 1px solid var(--border-color);
+          color: var(--text-dim);
           font-family: 'Inter', sans-serif;
           font-size: 0.7rem;
           font-weight: 500;
@@ -514,14 +495,14 @@ export default function Gallery3DSection() {
 
         .gallery-filter:hover {
           border-color: rgba(255, 255, 255, 0.4);
-          color: #ffffff;
-          background: rgba(255, 255, 255, 0.05);
+          color: var(--text-primary);
+          background: var(--card-bg);
         }
 
         .gallery-filter.active {
           background: linear-gradient(135deg, #dc2626, #f97316);
           border-color: transparent;
-          color: #ffffff;
+          color: var(--text-primary);
           box-shadow: 0 10px 40px rgba(220, 38, 38, 0.4);
         }
 
@@ -541,8 +522,8 @@ export default function Gallery3DSection() {
           aspect-ratio: 4/3;
           border-radius: 1rem;
           overflow: hidden;
-          background: rgba(255, 255, 255, 0.02);
-          border: 1px solid rgba(255, 255, 255, 0.05);
+          background: var(--card-bg);
+          border: 1px solid var(--card-border);
           transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
@@ -598,7 +579,7 @@ export default function Gallery3DSection() {
           font-family: 'Inter', sans-serif;
           font-size: 1.25rem;
           font-weight: 700;
-          color: #ffffff;
+          color: var(--text-primary);
           margin: 0;
         }
 
@@ -631,7 +612,7 @@ export default function Gallery3DSection() {
         .gallery-lightbox {
           position: fixed;
           inset: 0;
-          background: rgba(0, 0, 0, 0.95);
+          background: var(--shadow);
           backdrop-filter: blur(20px);
           z-index: 99999;
           display: flex;
@@ -676,7 +657,7 @@ export default function Gallery3DSection() {
           font-family: 'Inter', sans-serif;
           font-size: 1.5rem;
           font-weight: 700;
-          color: #ffffff;
+          color: var(--text-primary);
           margin: 0.5rem 0 0;
         }
 
@@ -686,7 +667,7 @@ export default function Gallery3DSection() {
           right: 1rem;
           width: 50px;
           height: 50px;
-          background: rgba(255, 255, 255, 0.1);
+          background: var(--border-color);
           border: none;
           border-radius: 50%;
           cursor: pointer;

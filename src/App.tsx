@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { ThemeProvider } from "./context/ThemeContext";
 import CustomCursor from "./components/ui/CustomCursor";
 import Preloader from "./components/ui/Preloader";
 import Navigation from "./components/ui/Navigation";
@@ -26,8 +27,16 @@ export default function App() {
     return () => clearTimeout(timer);
   }, []);
 
+  // Initialize theme from localStorage on mount
+  useEffect(() => {
+    const stored = localStorage.getItem('lens-theme');
+    if (stored === 'light' || stored === 'dark') {
+      document.documentElement.setAttribute('data-theme', stored);
+    }
+  }, []);
+
   return (
-    <>
+    <ThemeProvider>
       <CustomCursor />
 
       {isLoading && <Preloader />}
@@ -79,6 +88,6 @@ export default function App() {
           <FooterSection />
         </main>
       </div>
-    </>
+    </ThemeProvider>
   );
 }

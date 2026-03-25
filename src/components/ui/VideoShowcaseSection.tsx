@@ -176,7 +176,7 @@ export default function VideoShowcaseSection() {
   // Mobile Layout
   if (isMobile) {
     return (
-      <div style={{ backgroundColor: '#000', width: '100%', margin: 0, padding: 0 }}>
+      <div style={{ backgroundColor: 'var(--bg-primary)', width: '100%', margin: 0, padding: 0 }}>
         <div
           style={{
             height: 'calc(100vh - 60px)',
@@ -294,7 +294,7 @@ export default function VideoShowcaseSection() {
                     style={{
                       fontSize: '1.5rem',
                       fontWeight: 700,
-                      color: '#fff',
+                      color: 'var(--text-primary)',
                       fontFamily: "'Inter', sans-serif",
                       textTransform: 'uppercase',
                       letterSpacing: '-0.01em',
@@ -524,14 +524,14 @@ export default function VideoShowcaseSection() {
 
   // Desktop Layout (Original)
   return (
-    <div style={{ backgroundColor: '#000' }}>
+    <div style={{ backgroundColor: 'var(--bg-primary)' }}>
       {/* Scroll Section */}
       <div
         ref={containerRef}
         style={{
           height: '600vh',
           position: 'relative',
-          backgroundColor: '#000'
+          backgroundColor: 'var(--bg-primary)'
         }}
       >
         {/* Fixed Content */}
@@ -543,7 +543,7 @@ export default function VideoShowcaseSection() {
             width: '100%',
             height: '100vh',
             overflow: 'hidden',
-            backgroundColor: '#000'
+            backgroundColor: 'var(--bg-primary)'
           }}
         >
           {/* Video Backgrounds */}
@@ -829,7 +829,7 @@ export default function VideoShowcaseSection() {
       <div
         style={{
           height: '0vh',
-          backgroundColor: '#fff',
+          backgroundColor: 'var(--bg-primary)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center'

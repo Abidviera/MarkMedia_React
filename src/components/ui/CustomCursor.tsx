@@ -20,9 +20,6 @@ export default function CustomCursor() {
     const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
     if (isTouchDevice) return;
 
-    let targetX = 0;
-    let targetY = 0;
-
     const moveCursor = (e: MouseEvent) => {
       pos.current = { x: e.clientX, y: e.clientY };
     };
@@ -123,7 +120,7 @@ export default function CustomCursor() {
           left: 0;
           width: 8px;
           height: 8px;
-          background: #dc2626;
+          background: var(--cursor-dot);
           border-radius: 50%;
           pointer-events: none;
           z-index: 99999;
@@ -138,7 +135,7 @@ export default function CustomCursor() {
           left: 0;
           width: 40px;
           height: 40px;
-          border: 1px solid rgba(255, 255, 255, 0.5);
+          border: 1px solid var(--cursor-ring);
           border-radius: 50%;
           pointer-events: none;
           z-index: 99998;
@@ -155,15 +152,15 @@ export default function CustomCursor() {
         .cursor-ring.hover-link {
           width: 60px;
           height: 60px;
-          border-color: #dc2626;
-          background-color: rgba(220, 38, 38, 0.1);
+          border-color: var(--accent);
+          background-color: rgba(var(--accent-rgb), 0.1);
         }
 
         /* Hover state for buttons */
         .cursor-ring.hover-button {
           width: 80px;
           height: 80px;
-          border-color: #ffffff;
+          border-color: var(--text-primary);
           background-color: rgba(255, 255, 255, 0.1);
           mix-blend-mode: difference;
         }
@@ -185,7 +182,7 @@ export default function CustomCursor() {
           font-family: 'Inter', sans-serif;
           font-size: 0.5rem;
           font-weight: 600;
-          color: #ffffff;
+          color: var(--text-primary);
           letter-spacing: 0.1em;
           opacity: 0;
           transition: opacity 0.3s ease;

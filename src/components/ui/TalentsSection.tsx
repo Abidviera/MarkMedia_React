@@ -110,8 +110,8 @@ export default function TalentsSection() {
       <style>{`
         .talents-section {
           position: relative;
-          background-color: #000000;
-          border-top: 1px solid rgba(255, 255, 255, 0.1);
+          background-color: var(--bg-primary);
+          border-top: 1px solid var(--border-color);
           padding: 8rem 2rem;
           overflow: hidden;
         }
@@ -129,7 +129,7 @@ export default function TalentsSection() {
           align-items: flex-end;
           margin-bottom: 5rem;
           padding-bottom: 3rem;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+          border-bottom: 1px solid var(--border-color);
         }
 
         .talents-title-group {
@@ -152,7 +152,7 @@ export default function TalentsSection() {
           font-weight: 800;
           font-size: clamp(4rem, 10vw, 8rem);
           line-height: 1;
-          color: #ffffff;
+          color: var(--text-primary);
           letter-spacing: -0.03em;
           text-transform: uppercase;
           overflow: hidden;
@@ -164,13 +164,13 @@ export default function TalentsSection() {
 
         .talents-heading-accent {
           color: transparent;
-          -webkit-text-stroke: 1px rgba(255, 255, 255, 0.5);
+          -webkit-text-stroke: 1px var(--border-hover);
         }
 
         .talents-view-all {
           font-family: 'Inter', sans-serif;
           font-size: 0.7rem;
-          color: rgba(255, 255, 255, 0.5);
+          color: var(--text-dim);
           text-decoration: none;
           text-transform: uppercase;
           letter-spacing: 0.15em;
@@ -186,14 +186,14 @@ export default function TalentsSection() {
           left: 0;
           width: 100%;
           height: 1px;
-          background: #dc2626;
+          background: var(--accent);
           transform: scaleX(0);
           transform-origin: right;
           transition: transform 0.3s ease;
         }
 
         .talents-view-all:hover {
-          color: #ffffff;
+          color: var(--text-primary);
         }
 
         .talents-view-all:hover::after {
@@ -219,7 +219,7 @@ export default function TalentsSection() {
           aspect-ratio: 3/4;
           overflow: hidden;
           margin-bottom: 1.5rem;
-          background-color: rgba(255, 255, 255, 0.02);
+          background-color: var(--card-bg);
         }
 
         .talent-image-wrapper::before {
@@ -233,7 +233,7 @@ export default function TalentsSection() {
         }
 
         .talent-card:hover .talent-image-wrapper::before {
-          border-color: rgba(255, 255, 255, 0.2);
+          border-color: var(--card-border-hover);
         }
 
         .talent-image {
@@ -273,21 +273,21 @@ export default function TalentsSection() {
           top: 1rem;
           left: 1rem;
           padding: 0.5rem 1rem;
-          background-color: rgba(0, 0, 0, 0.8);
+          background-color: var(--shadow);
           backdrop-filter: blur(10px);
-          color: #ffffff;
+          color: var(--text-primary);
           font-family: 'Inter', sans-serif;
           font-size: 0.6rem;
           text-transform: uppercase;
           letter-spacing: 0.2em;
           z-index: 3;
-          border: 1px solid rgba(255, 255, 255, 0.1);
+          border: 1px solid var(--border-color);
           transition: all 0.3s ease;
         }
 
         .talent-card:hover .talent-badge {
-          background-color: #dc2626;
-          border-color: #dc2626;
+          background-color: var(--accent);
+          border-color: var(--accent);
         }
 
         .talent-info {
@@ -300,19 +300,19 @@ export default function TalentsSection() {
           font-family: 'Inter', sans-serif;
           font-size: 1.25rem;
           font-weight: 700;
-          color: #ffffff;
+          color: var(--text-primary);
           letter-spacing: 0.02em;
           transition: color 0.3s ease;
         }
 
         .talent-card:hover .talent-name {
-          color: rgba(255, 255, 255, 0.7);
+          color: var(--text-muted);
         }
 
         .talent-role {
           font-family: 'Inter', sans-serif;
           font-size: 0.7rem;
-          color: rgba(255, 255, 255, 0.4);
+          color: var(--text-dim);
           text-transform: uppercase;
           letter-spacing: 0.15em;
         }
@@ -320,7 +320,7 @@ export default function TalentsSection() {
         .talent-line {
           width: 0;
           height: 1px;
-          background: #dc2626;
+          background: var(--accent);
           margin-top: 0.75rem;
           transition: width 0.5s ease;
         }
@@ -343,7 +343,7 @@ export default function TalentsSection() {
           font-family: 'Inter', sans-serif;
           font-size: 20vw;
           font-weight: 800;
-          color: #ffffff;
+          color: var(--text-primary);
           white-space: nowrap;
           opacity: 0.02;
           letter-spacing: -0.05em;

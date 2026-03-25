@@ -91,8 +91,8 @@ export default function TestimonialsSection() {
       <style>{`
         .testimonials-section {
           position: relative;
-          background-color: #0a0a0a;
-          border-top: 1px solid rgba(255, 255, 255, 0.05);
+          background-color: var(--bg-secondary);
+          border-top: 1px solid var(--border-color);
           padding: 8rem 2rem;
           overflow: hidden;
         }
@@ -115,7 +115,7 @@ export default function TestimonialsSection() {
           font-size: 0.75rem;
           text-transform: uppercase;
           letter-spacing: 0.3em;
-          color: #dc2626;
+          color: var(--accent);
           margin-bottom: 1.5rem;
         }
 
@@ -124,7 +124,7 @@ export default function TestimonialsSection() {
           font-weight: 800;
           font-size: clamp(3rem, 8vw, 6rem);
           line-height: 1;
-          color: #ffffff;
+          color: var(--text-primary);
           letter-spacing: -0.03em;
           text-transform: uppercase;
         }
@@ -135,7 +135,7 @@ export default function TestimonialsSection() {
 
         .testimonial-heading-accent {
           color: transparent;
-          -webkit-text-stroke: 1px rgba(255, 255, 255, 0.5);
+          -webkit-text-stroke: 1px var(--border-hover);
         }
 
         /* Featured Testimonial */
@@ -144,14 +144,14 @@ export default function TestimonialsSection() {
           max-width: 900px;
           margin: 0 auto 4rem;
           padding: 4rem;
-          background: rgba(255, 255, 255, 0.02);
-          border: 1px solid rgba(255, 255, 255, 0.05);
+          background: var(--card-bg);
+          border: 1px solid var(--card-border);
         }
 
         .testimonial-quote-mark {
           font-family: 'Georgia', serif;
           font-size: 8rem;
-          color: #dc2626;
+          color: var(--accent);
           line-height: 1;
           opacity: 0.5;
           position: absolute;
@@ -168,7 +168,7 @@ export default function TestimonialsSection() {
           font-family: 'Inter', sans-serif;
           font-size: clamp(1.25rem, 3vw, 2rem);
           font-weight: 300;
-          color: rgba(255, 255, 255, 0.9);
+          color: var(--text-primary);
           line-height: 1.6;
           margin-bottom: 2rem;
           text-align: center;
@@ -186,7 +186,7 @@ export default function TestimonialsSection() {
           height: 60px;
           border-radius: 50%;
           object-fit: cover;
-          border: 2px solid #dc2626;
+          border: 2px solid var(--accent);
         }
 
         .testimonial-author-info {
@@ -197,14 +197,14 @@ export default function TestimonialsSection() {
           font-family: 'Inter', sans-serif;
           font-size: 1rem;
           font-weight: 700;
-          color: #ffffff;
+          color: var(--text-primary);
           letter-spacing: 0.05em;
         }
 
         .testimonial-author-role {
           font-family: 'Inter', sans-serif;
           font-size: 0.75rem;
-          color: rgba(255, 255, 255, 0.5);
+          color: var(--text-dim);
           text-transform: uppercase;
           letter-spacing: 0.1em;
         }
@@ -232,13 +232,13 @@ export default function TestimonialsSection() {
           width: 8px;
           height: 8px;
           border-radius: 50%;
-          background: rgba(255, 255, 255, 0.2);
+          background: var(--border-color);
           cursor: pointer;
           transition: all 0.3s ease;
         }
 
         .testimonial-indicator.active {
-          background: #dc2626;
+          background: var(--accent);
           transform: scale(1.5);
         }
 
@@ -251,21 +251,21 @@ export default function TestimonialsSection() {
 
         .testimonial-card {
           padding: 2.5rem;
-          background: rgba(255, 255, 255, 0.02);
-          border: 1px solid rgba(255, 255, 255, 0.05);
+          background: var(--card-bg);
+          border: 1px solid var(--card-border);
           transition: all 0.4s ease;
         }
 
         .testimonial-card:hover {
-          background: rgba(255, 255, 255, 0.05);
-          border-color: rgba(255, 255, 255, 0.1);
+          background: var(--card-bg);
+          border-color: var(--card-border-hover);
           transform: translateY(-5px);
         }
 
         .testimonial-card-quote {
           font-family: 'Inter', sans-serif;
           font-size: 1rem;
-          color: rgba(255, 255, 255, 0.7);
+          color: var(--text-muted);
           line-height: 1.8;
           margin-bottom: 2rem;
         }
@@ -287,13 +287,13 @@ export default function TestimonialsSection() {
           font-family: 'Inter', sans-serif;
           font-size: 0.875rem;
           font-weight: 600;
-          color: #ffffff;
+          color: var(--text-primary);
         }
 
         .testimonial-card-role {
           font-family: 'Inter', sans-serif;
           font-size: 0.7rem;
-          color: rgba(255, 255, 255, 0.4);
+          color: var(--text-dim);
           text-transform: uppercase;
           letter-spacing: 0.1em;
         }
@@ -312,7 +312,7 @@ export default function TestimonialsSection() {
           font-family: 'Inter', sans-serif;
           font-size: 30vw;
           font-weight: 800;
-          color: #ffffff;
+          color: var(--text-primary);
           white-space: nowrap;
           opacity: 0.01;
           letter-spacing: -0.05em;

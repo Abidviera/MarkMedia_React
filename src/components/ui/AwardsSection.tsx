@@ -7,6 +7,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
 import * as THREE from 'three';
+import { useOnView } from '../../hooks/useOnView';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -316,8 +317,9 @@ function AwardCard({ award, index }: { award: typeof awards[0]; index: number })
 
 export default function AwardsSection() {
   const sectionRef = useRef<HTMLElement>(null);
+  const { ref: viewRef, isInView } = useOnView(0.1);
   const { scrollYProgress } = useScroll({
-    target: sectionRef,
+    target: isInView ? sectionRef : null,
     offset: ['start end', 'end start']
   });
 
@@ -378,7 +380,13 @@ export default function AwardsSection() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="awards-section">
+    <section
+      ref={(el) => {
+        sectionRef.current = el;
+        (viewRef as React.MutableRefObject<HTMLElement | null>).current = el;
+      }}
+      className="awards-section"
+    >
       
 
       {/* Background decorative elements */}

@@ -3,6 +3,61 @@
 @import "tailwindcss";
 
 /* =============================================
+   SMOOTH SCROLL OPTIMIZATIONS
+   ============================================= */
+
+/* Disable scroll anchoring to prevent layout jumps */
+html {
+  overflow-anchor: none;
+  scroll-behavior: auto; /* Lenis handles smoothness, browser auto is faster */
+}
+
+/* GPU acceleration layer for all animated elements */
+.gsap-animated,
+[data-gsap],
+.gallery-item,
+.gallery-item-inner,
+.gallery-item-image,
+.gallery-filter,
+.hero-bottle,
+.hero-bottle-wrapper,
+.hero-content,
+.text-hero,
+.hero-stamp,
+.ingredient-item,
+.timeline-entry,
+.timeline-img {
+  will-change: transform;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+/* GPU layer for fixed/sticky elements — but NOT canvas (Three.js manages its own layer) */
+.video-overlay,
+.gallery-section {
+  transform: translateZ(0);
+}
+
+/* High-performance transitions */
+.perf-transition {
+  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              opacity 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transform: translateZ(0);
+  will-change: transform, opacity;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* =============================================
    THEME: Dark (default)
    ============================================= */
 :root,

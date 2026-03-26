@@ -31,12 +31,20 @@ export default function CraftEdgeSection() {
 
     const ctx = gsap.context(() => {
       const header = headerRef.current;
+      const section = sectionRef.current;
 
       // ==========================
       // Initial Page Load Animations
       // ==========================
 
-      const onLoadTl = gsap.timeline({ defaults: { ease: 'power2.out' } });
+      const onLoadTl = gsap.timeline({
+        defaults: { ease: 'power2.out' },
+        scrollTrigger: {
+          trigger: section,
+          start: 'top 80%',
+          toggleActions: 'play none none none',
+        },
+      });
 
       onLoadTl
         // Animate header border width expansion
@@ -73,14 +81,6 @@ export default function CraftEdgeSection() {
           stagger: 0.2,
           ease: 'power3.out',
         }, 0)
-        // Reveal the bottle wrapper
-        .to('.hero-bottle-wrapper', {
-          opacity: 1,
-          scale: 1,
-          delay: 1.5,
-          duration: 1.3,
-          ease: 'power3.out',
-        }, 0)
         // Pop-in stamp image with scaling
         .to('.hero-stamp', {
           opacity: 1,
@@ -104,6 +104,21 @@ export default function CraftEdgeSection() {
       // ==========================
 
       const headerOffset = header?.offsetHeight || 80;
+
+      // 0. Bottle enters tied to scroll progress
+      gsap.timeline({
+        scrollTrigger: {
+          trigger: '.hero',
+          start: 'top 75%',
+          end: `top top+=${headerOffset}`,
+          scrub: 1,
+        },
+      })
+        .to('.hero-bottle-wrapper', {
+          opacity: 1,
+          scale: 1,
+          ease: 'none',
+        });
 
       // 1. Bottle animates on scroll from hero to intro
       gsap.timeline({

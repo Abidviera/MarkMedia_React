@@ -193,9 +193,9 @@ export default function PeacockHero() {
       };
 
       const animate = () => {
-        if (frameCount % 3 === 0) {
+        if (frameCount % 2 === 0) {
           if (!scrollStatus && !disableAnimate) {
-            scrollPosters(0.3);
+            scrollPosters(1.2);
           }
           frameCount = 1;
           assetGroup.position.y = assetGroupY;
@@ -314,7 +314,24 @@ export default function PeacockHero() {
           disableAnimate = 'true';
         } else {
           isHeroVisible = true;
+          // Re-enable auto-animation when scrolled back to top of page
           disableAnimate = null;
+        }
+
+        // Also check if the hero element is actually visible in the viewport.
+        // This handles cases where scrollY > heroHeight * 0.1 but the hero
+        // is still on screen (e.g. deep-linked URLs, anchor navigation).
+        const rect = containerRef.current?.getBoundingClientRect();
+        if (rect) {
+          const heroTop = rect.top;
+          const heroBottom = rect.bottom;
+          const viewportHeight = window.innerHeight;
+
+          if (heroTop < viewportHeight && heroBottom > 0) {
+            // Hero is visible in viewport — ensure animation is running
+            isHeroVisible = true;
+            disableAnimate = null;
+          }
         }
       };
 

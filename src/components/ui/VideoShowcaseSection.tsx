@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useOnView } from '../../hooks/useOnView';
 
 interface Section {
   service: string;
@@ -56,6 +57,9 @@ export default function VideoShowcaseSection() {
   const containerRef = useRef<HTMLDivElement>(null);
   const desktopVideoRefs = useRef<(HTMLVideoElement | null)[]>([]);
 
+  // Only activate the component when it enters the viewport
+  const { ref: viewRef, isInView } = useOnView(0.1);
+
   // Check if mobile
   useEffect(() => {
     const checkMobile = () => {
@@ -66,9 +70,9 @@ export default function VideoShowcaseSection() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Scroll-based video change for Desktop
+  // Scroll-based video change for Desktop — only active when in view
   useEffect(() => {
-    if (isMobile) return;
+    if (isMobile || !isInView) return;
 
     const handleScroll = () => {
       if (!containerRef.current) return;
@@ -96,54 +100,50 @@ export default function VideoShowcaseSection() {
       setCurrentSection(newSection);
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll();
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [isMobile]);
+  }, [isMobile, isInView]);
 
-  // Play/pause videos based on current section
+  // Play/pause videos based on current section — only when section is in view
   useEffect(() => {
     if (isMobile) {
       // Mobile: single video
-      if (mobileVideoRef.current) {
+      if (mobileVideoRef.current && isInView) {
         mobileVideoRef.current.src = sections[currentSection].video;
         mobileVideoRef.current.load();
         mobileVideoRef.current.play().catch(() => {
           // Silently handle autoplay restrictions
         });
+      } else if (mobileVideoRef.current) {
+        mobileVideoRef.current.pause();
       }
     } else {
-      // Desktop: all videos - play current, pause others
-      desktopVideoRefs.current.forEach((video, index) => {
-        if (video) {
-          if (index === currentSection) {
-            video.muted = false;
-            video.play().catch(() => {
-              // Try muted if autoplay fails
-              video.muted = true;
-              video.play().catch(() => {});
-            });
-          } else {
-            video.pause();
-          }
-        }
-      });
-    }
-  }, [currentSection, isMobile]);
+      // Desktop: all videos - play current with audio, pause others — ONLY when in view
+      if (!isInView) {
+        // Pause ALL videos when section is not visible
+        desktopVideoRefs.current.forEach((video) => {
+          if (video) video.pause();
+        });
+        return;
+      }
 
-  // Initialize videos on mount
-  useEffect(() => {
-    // Desktop: initialize all videos
-    if (!isMobile) {
       desktopVideoRefs.current.forEach((video, index) => {
-        if (video) {
-          if (index === 0) {
+        if (!video) return;
+        if (index === currentSection) {
+          // Play current video with AUDIO (unmuted) when section is visible
+          video.muted = false;
+          video.play().catch(() => {
+            // Fallback to muted if autoplay with audio fails
+            video.muted = true;
             video.play().catch(() => {});
-          }
+          });
+        } else {
+          video.pause();
         }
       });
     }
-  }, [isMobile]);
+  }, [currentSection, isMobile, isInView]);
 
   // Touch handlers for swipe (Mobile only)
   const minSwipeDistance = 50;
@@ -527,7 +527,10 @@ export default function VideoShowcaseSection() {
     <div style={{ backgroundColor: 'var(--bg-primary)' }}>
       {/* Scroll Section */}
       <div
-        ref={containerRef}
+        ref={(el) => {
+          containerRef.current = el;
+          (viewRef as React.MutableRefObject<HTMLElement | null>).current = el;
+        }}
         style={{
           height: '600vh',
           position: 'relative',
@@ -574,11 +577,9 @@ export default function VideoShowcaseSection() {
                   transition: 'opacity 0.8s ease',
                   zIndex: index === currentSection ? 2 : 0
                 }}
-                autoPlay
-                muted
                 loop
                 playsInline
-                preload="auto"
+                preload="metadata"
               />
             ))}
           </div>

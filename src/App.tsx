@@ -1,8 +1,12 @@
 import { useState, useEffect } from "react";
 import { ThemeProvider } from "./context/ThemeContext";
+import Lenis from "lenis";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import CustomCursor from "./components/ui/CustomCursor";
 import Preloader from "./components/ui/Preloader";
 import Navigation from "./components/ui/Navigation";
+import MarkMediaHero from "./components/ui/MarkMediaHero";
 import PeacockHero from "./components/ui/PeacockHero";
 import AboutMark from "./components/ui/AboutMark";
 import VideoShowcaseSection from "./components/ui/VideoShowcaseSection";
@@ -17,7 +21,10 @@ import TestimonialsSection from "./components/ui/TestimonialsSection";
 import InsightsSection from "./components/ui/InsightsSection";
 import ContactSection from "./components/ui/ContactSection";
 import FooterSection from "./components/ui/FooterSection";
+import LazySection from "./components/ui/LazySection";
 import "./styles/globals.css";
+
+gsap.registerPlugin(ScrollTrigger);
 
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -35,6 +42,41 @@ export default function App() {
     }
   }, []);
 
+  // ─────────────────────────────────────────────────────────────
+  // UNIFIED SMOOTH SCROLL — Lenis + GSAP ScrollTrigger integration
+  // This is the single source of truth for all scroll behavior.
+  // ─────────────────────────────────────────────────────────────
+  useEffect(() => {
+    // Create Lenis with ultra-smooth settings
+    const lenis = new Lenis({
+      duration: 1.2,          // smooth, not too slow
+      easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      orientation: 'vertical',
+      smoothWheel: true,
+      syncTouch: false,
+    });
+
+    // ── Integrate Lenis with GSAP ScrollTrigger ──
+    // This makes GSAP read Lenis scroll values instead of native scroll,
+    // eliminating the conflict between the two systems.
+    lenis.on('scroll', ScrollTrigger.update);
+
+    // Lenis RAF loop — drives both Lenis and GSAP ticker
+    gsap.ticker.lagSmoothing(0);
+    gsap.ticker.add((time: number) => {
+      lenis.raf(time * 1000);
+    });
+
+    // Expose Lenis globally so Navigation can use it
+    (window as unknown as Record<string, unknown>).__lenis = lenis;
+
+    return () => {
+      gsap.ticker.remove((time: number) => lenis.raf(time * 1000));
+      lenis.destroy();
+      delete (window as unknown as Record<string, unknown>).__lenis;
+    };
+  }, []);
+
   return (
     <ThemeProvider>
       <CustomCursor />
@@ -45,47 +87,78 @@ export default function App() {
         <Navigation />
 
         <main>
-          {/* Hero with 3D poster wall (Three.js) */}
-          <PeacockHero />
+          {/* New hero — scroll-driven frame animation with peacock imagery */}
+          <MarkMediaHero />
 
-          {/* About & Stats */}
-          <AboutMark />
+          <LazySection>
+            {/* Hero with 3D poster wall (Three.js) */}
+            <PeacockHero />
+          </LazySection>
 
-          {/* Video showcase with scroll (GSAP) */}
-          <VideoShowcaseSection />
+          <LazySection>
+            {/* About & Stats */}
+            <AboutMark />
+          </LazySection>
 
-          {/* Craft Edge with timeline (GSAP) */}
-          <CraftEdgeSection />
+          <LazySection>
+            {/* Video showcase with scroll (GSAP) */}
+            <VideoShowcaseSection />
+          </LazySection>
 
-          {/* Bento Grid Portfolio */}
-          <BentoGrid />
+          <LazySection>
+            {/* Craft Edge with timeline (GSAP) */}
+            <CraftEdgeSection />
+          </LazySection>
 
-          {/* 3D Gallery with Three.js */}
-          <Gallery3DSection />
+          <LazySection>
+            {/* Bento Grid Portfolio */}
+            <BentoGrid />
+          </LazySection>
 
-          {/* Marquee with smooth scroll */}
-          <MarqueeSection />
+          <LazySection>
+            {/* 3D Gallery with Three.js */}
+            <Gallery3DSection />
+          </LazySection>
 
-          {/* Stats Counter (GSAP animated) */}
-          <StatsSection />
+          <LazySection>
+            {/* Marquee with smooth scroll */}
+            <MarqueeSection />
+          </LazySection>
 
-          {/* Team Talents */}
-          <TalentsSection />
+          <LazySection>
+            {/* Stats Counter (GSAP animated) */}
+            <StatsSection />
+          </LazySection>
 
-          {/* Awards with 3D particles (Three.js) */}
-          <AwardsSection />
+          <LazySection>
+            {/* Team Talents */}
+            <TalentsSection />
+          </LazySection>
 
-          {/* Testimonials with Framer Motion */}
-          <TestimonialsSection />
+          <LazySection>
+            {/* Awards with 3D particles (Three.js) */}
+            <AwardsSection />
+          </LazySection>
 
-          {/* Insights/Blog */}
-          <InsightsSection />
+          <LazySection>
+            {/* Testimonials with Framer Motion */}
+            <TestimonialsSection />
+          </LazySection>
 
-          {/* Contact Form */}
-          <ContactSection />
+          <LazySection>
+            {/* Insights/Blog */}
+            <InsightsSection />
+          </LazySection>
 
-          {/* Footer */}
-          <FooterSection />
+          <LazySection>
+            {/* Contact Form */}
+            <ContactSection />
+          </LazySection>
+
+          <LazySection>
+            {/* Footer */}
+            <FooterSection />
+          </LazySection>
         </main>
       </div>
     </ThemeProvider>

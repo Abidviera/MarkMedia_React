@@ -1,33 +1,15 @@
 import { useState, useEffect, useRef } from 'react';
-import Lenis from 'lenis';
 import useTheme from '../../hooks/useTheme';
 
 export default function Navigation() {
   const [scrolled, setScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const lenisRef = useRef<Lenis | null>(null);
+  const lenisRef = useRef<import('lenis').default | null>(null);
   const { isLight, toggleTheme } = useTheme();
 
   useEffect(() => {
-    // Initialize Lenis smooth scroll
-    lenisRef.current = new Lenis({
-      lerp: 0.1,
-      smoothWheel: true,
-      syncTouch: false,
-    });
-
-    const raf = (time: number) => {
-      lenisRef.current?.raf(time);
-      requestAnimationFrame(raf);
-    };
-
-    const rafId = requestAnimationFrame(raf);
-
-    // Cleanup on unmount
-    return () => {
-      cancelAnimationFrame(rafId);
-      lenisRef.current?.destroy();
-    };
+    // Use the unified Lenis instance from App.tsx
+    lenisRef.current = (window as unknown as Record<string, Lenis>).__lenis ?? null;
   }, []);
 
   useEffect(() => {

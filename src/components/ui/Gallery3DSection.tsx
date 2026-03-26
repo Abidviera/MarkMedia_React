@@ -7,6 +7,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { motion, AnimatePresence, useScroll, useTransform, useSpring } from 'framer-motion';
 import * as THREE from 'three';
+import { useOnView } from '../../hooks/useOnView';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -139,7 +140,7 @@ function CameraController() {
     const handleScroll = () => {
       scrollY.current = window.scrollY;
     };
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -232,11 +233,12 @@ function GalleryItem({ image, index, onClick }: { image: typeof galleryImages[0]
 
 export default function Gallery3DSection() {
   const sectionRef = useRef<HTMLElement>(null);
+  const { ref: viewRef, isInView } = useOnView(0.1);
   const [selectedImage, setSelectedImage] = useState<typeof galleryImages[0] | null>(null);
   const [activeCategory, setActiveCategory] = useState('All');
 
   const { scrollYProgress } = useScroll({
-    target: sectionRef,
+    target: isInView ? sectionRef : null,
     offset: ['start end', 'end start']
   });
 
@@ -282,7 +284,13 @@ export default function Gallery3DSection() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="gallery-section">
+    <section
+      ref={(el) => {
+        sectionRef.current = el;
+        (viewRef as React.MutableRefObject<HTMLElement | null>).current = el;
+      }}
+      className="gallery-section"
+    >
     
 
       {/* Gradient Overlays */}

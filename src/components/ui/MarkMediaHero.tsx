@@ -19,7 +19,7 @@ const texts = {
 
 function getFrameUrl(index: number): string {
   const padded = String(index).padStart(3, '0');
-  return `${FRAME_PATH}${padded}.jpg`;
+  return `${FRAME_PATH}${padded}.webp`;
 }
 
 export default function MarkMediaHero() {

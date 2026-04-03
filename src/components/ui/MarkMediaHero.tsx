@@ -68,7 +68,7 @@ export default function MarkMediaHero() {
     return () => clearInterval(checkReady);
   }, []);
 
-  // Canvas frame renderer
+  // Canvas frame renderer — mobile: maintain 16:9 ratio with letterboxing | desktop: stretch to fill
   useEffect(() => {
     if (!imagesReady || !canvasRef.current) return;
 
@@ -79,18 +79,42 @@ export default function MarkMediaHero() {
     const draw = (frameIndex: number) => {
       const img = imagesRef.current[frameIndex - 1];
       if (!img || !img.complete || !img.naturalWidth) return;
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const videoRatio = 16 / 9;
+      const isMobile = vw < 768;
+
+      if (isMobile) {
+        // Mobile: maintain 16:9 aspect ratio with letterboxing
+        const drawWidth = vw;
+        const drawHeight = vw / videoRatio;
+        const offsetX = 0;
+        const offsetY = (vh - drawHeight) / 2;
+        canvas.width = vw;
+        canvas.height = vh;
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+      } else {
+        // Desktop: stretch to fill viewport (existing behavior)
+        canvas.width = vw;
+        canvas.height = vh;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      }
     };
 
     draw(1);
+
+    const handleResize = () => draw(1);
+    window.addEventListener('resize', handleResize);
 
     // Expose draw function globally for scroll trigger
     (window as unknown as Record<string, unknown>).markMediaDrawFrame = draw;
 
     return () => {
+      window.removeEventListener('resize', handleResize);
       delete (window as unknown as Record<string, unknown>).markMediaDrawFrame;
     };
   }, [imagesReady]);

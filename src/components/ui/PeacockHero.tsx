@@ -1,6 +1,18 @@
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 
+// Only use first 30 images to avoid blocking the main thread
+const markphotosImages = [
+  '/markphotos/10.webp', '/markphotos/18.webp', '/markphotos/19.webp', '/markphotos/2.webp',
+  '/markphotos/21.webp', '/markphotos/4.webp', '/markphotos/5.webp', '/markphotos/7.webp',
+  '/markphotos/8.webp', '/markphotos/9.webp', '/markphotos/ADS_1648.webp', '/markphotos/ADS_2288.webp',
+  '/markphotos/ADS_2353.webp', '/markphotos/ADS_2817.webp', '/markphotos/ADS_2857.webp', '/markphotos/ADS_2860.webp',
+  '/markphotos/ADS_3935.webp', '/markphotos/ADS_3946.webp', '/markphotos/ADS_3949.webp', '/markphotos/DSC_1215.webp',
+  '/markphotos/DSC_1322.webp', '/markphotos/DSC_1327.webp', '/markphotos/DSC_1371.webp', '/markphotos/DSC_1374.webp',
+  '/markphotos/DSC_1376.webp', '/markphotos/DSC_1829.webp', '/markphotos/DSC_1839.webp', '/markphotos/DSC_2974.webp',
+  '/markphotos/DSC_2998.webp', '/markphotos/DSC_3298.webp',
+];
+
 declare global {
   interface Window {
     stopAnimation?: () => void;
@@ -129,8 +141,9 @@ export default function PeacockHero() {
         w: window.innerWidth,
       };
 
+      const canvas = document.createElement('canvas');
       const scene = new THREE.Scene();
-      const renderer = new THREE.WebGLRenderer();
+      const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
       renderer.setPixelRatio(window.devicePixelRatio);
 
       const posterShape = new THREE.Shape();
@@ -215,47 +228,15 @@ export default function PeacockHero() {
         return newList;
       };
 
-      const fetchAndStore = async (key: string, url: string) => {
-        const storage = localStorage.getItem(key);
-        if (storage) {
-          return JSON.parse(storage);
-        } else {
-          const response = await fetch(url);
-          const data = await response.json();
-          localStorage.setItem(key, JSON.stringify(data));
-          return data;
-        }
-      };
-
-      const fetchConfig = () =>
-        fetchAndStore('tmdbConfig', `https://api.themoviedb.org/3/configuration?api_key=17f6c7973c2ed29ef001953add2d04d3`);
-
-      const fetchAssetList = (type: 'movie' | 'tv', page: number) => {
-        const peacockProvider = [386, 387];
-        const url = `https://api.themoviedb.org/3/discover/${type}?api_key=17f6c7973c2ed29ef001953add2d04d3&include_adult=true&sort_by=popularity.desc&language=en-US&page=${page}&watch_region=US&with_watch_providers=${peacockProvider.join('|')}&with_networks=3353`;
-        return fetchAndStore(`tmdbAssetList${type}${page}`, url);
-      };
-
-      const createImageURL = (baseUrl: string, size: string, path: string) =>
-        `${baseUrl}${size}${path}`;
-
       const initScene = async () => {
-        const config = await fetchConfig();
-        const assetList = shuffleList([
-          ...(await fetchAssetList('tv', 1)).results,
-          ...(await fetchAssetList('tv', 2)).results,
-          ...(await fetchAssetList('tv', 3)).results,
-          ...(await fetchAssetList('movie', 1)).results,
-          ...(await fetchAssetList('movie', 2)).results,
-          ...(await fetchAssetList('movie', 3)).results,
-        ]).splice(0, posterSize.cols * posterSize.rows);
-
+        const imageList = shuffleList([...markphotosImages]).splice(0, posterSize.cols * posterSize.rows);
         const textureLoader = new THREE.TextureLoader();
         let x = 0;
         let y = 0;
         let rowGroup: THREE.Group;
 
-        assetList.forEach((asset: { poster_path: string; name?: string; title?: string }, i: number) => {
+        for (let i = 0; i < imageList.length; i++) {
+          const url = imageList[i] as string;
           if (i % posterSize.cols === 0) {
             y += posterSize.h + posterSize.padding;
             x = 0;
@@ -267,13 +248,7 @@ export default function PeacockHero() {
             x += posterSize.w + posterSize.padding;
           }
 
-          const url = createImageURL(
-            config.images.secure_base_url,
-            config.images.poster_sizes[posterSize.resIndex],
-            asset.poster_path
-          );
-
-          const posterTexture = textureLoader.load(url);
+          const posterTexture = await textureLoader.loadAsync(url);
           posterTexture.colorSpace = THREE.SRGBColorSpace;
           posterTexture.wrapS = posterTexture.wrapT = THREE.RepeatWrapping;
           posterTexture.repeat.set(0.037, 0.025);
@@ -285,9 +260,9 @@ export default function PeacockHero() {
 
           const poster = new THREE.Mesh(posterGeometry, material);
           poster.position.x = x;
-          poster.name = asset.name || asset.title;
+          poster.name = url;
           rowGroup!.add(poster);
-        });
+        }
       };
 
       let isHeroVisible = true;

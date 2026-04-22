@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState, Suspense, useMemo } from 'react';
+import { useEffect, useRef, useState, Suspense, useMemo, forwardRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Float, MeshDistortMaterial, Environment, Stars, Sparkles } from '@react-three/drei';
 import { gsap } from 'gsap';
@@ -181,11 +181,12 @@ function Scene3D() {
 }
 
 // Gallery Item Component
-function GalleryItem({ image, index, onClick }: { image: typeof galleryImages[0]; index: number; onClick: () => void }) {
+const GalleryItem = forwardRef(function GalleryItem({ image, index, onClick }: { image: typeof galleryImages[0]; index: number; onClick: () => void }, ref: React.ForwardedRef<HTMLDivElement>) {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
     <motion.div
+      ref={ref}
       className="gallery-item"
       initial={{ opacity: 0, scale: 0.8, y: 50 }}
       whileInView={{ opacity: 1, scale: 1, y: 0 }}
@@ -229,7 +230,7 @@ function GalleryItem({ image, index, onClick }: { image: typeof galleryImages[0]
       </div>
     </motion.div>
   );
-}
+});
 
 export default function Gallery3DSection() {
   const sectionRef = useRef<HTMLElement>(null);

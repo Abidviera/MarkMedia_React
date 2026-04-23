@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
+import type Lenis from 'lenis';
 import useTheme from '../../hooks/useTheme';
 
-export default function Navigation() {
+export default function Navigation({ onOpenWorkGallery }: { onOpenWorkGallery: () => void }) {
   const [scrolled, setScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const lenisRef = useRef<import('lenis').default | null>(null);
@@ -425,7 +426,14 @@ export default function Navigation() {
                 key={link.name}
                 href={link.href}
                 className="nav-link"
-                onClick={(e) => scrollToSection(e, link.href)}
+                onClick={(e) => {
+                  if (link.name === 'Work') {
+                    e.preventDefault();
+                    onOpenWorkGallery();
+                  } else {
+                    scrollToSection(e, link.href);
+                  }
+                }}
               >
                 {link.name}
               </a>
@@ -488,7 +496,15 @@ export default function Navigation() {
               key={link.name}
               href={link.href}
               className="nav-mobile-link"
-              onClick={(e) => scrollToSection(e, link.href)}
+              onClick={(e) => {
+                if (link.name === 'Work') {
+                  e.preventDefault();
+                  setIsMenuOpen(false);
+                  onOpenWorkGallery();
+                } else {
+                  scrollToSection(e, link.href);
+                }
+              }}
             >
               {link.name}
             </a>

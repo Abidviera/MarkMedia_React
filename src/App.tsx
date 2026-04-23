@@ -22,12 +22,15 @@ import InsightsSection from "./components/ui/InsightsSection";
 import ContactSection from "./components/ui/ContactSection";
 import FooterSection from "./components/ui/FooterSection";
 import LazySection from "./components/ui/LazySection";
+import ZoomParallaxSection from "./components/ui/ZoomParallaxSection";
+import StellarCardGallerySingle from "./components/ui/3d-image-gallery";
 import "./styles/globals.css";
 
 gsap.registerPlugin(ScrollTrigger);
 
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
+  const [showWorkGallery, setShowWorkGallery] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 2500);
@@ -42,11 +45,21 @@ export default function App() {
     }
   }, []);
 
+  // Expose gallery close function globally so the gallery can close itself
+  useEffect(() => {
+    (window as unknown as Record<string, unknown>).__closeWorkGallery = () => setShowWorkGallery(false);
+    return () => {
+      delete (window as unknown as Record<string, unknown>).__closeWorkGallery;
+    };
+  }, []);
+
   // ─────────────────────────────────────────────────────────────
   // UNIFIED SMOOTH SCROLL — Lenis + GSAP ScrollTrigger integration
   // This is the single source of truth for all scroll behavior.
   // ─────────────────────────────────────────────────────────────
   useEffect(() => {
+    if (showWorkGallery) return;
+
     // Create Lenis with ultra-smooth settings
     const lenis = new Lenis({
       duration: 1.2,          // smooth, not too slow
@@ -75,7 +88,15 @@ export default function App() {
       lenis.destroy();
       delete (window as unknown as Record<string, unknown>).__lenis;
     };
-  }, []);
+  }, [showWorkGallery]);
+
+  if (showWorkGallery) {
+    return (
+      <ThemeProvider>
+        <StellarCardGallerySingle />
+      </ThemeProvider>
+    );
+  }
 
   return (
     <ThemeProvider>
@@ -84,7 +105,7 @@ export default function App() {
       {isLoading && <Preloader />}
 
       <div className={`${isLoading ? "invisible" : "visible"}`}>
-        <Navigation />
+        <Navigation onOpenWorkGallery={() => setShowWorkGallery(true)} />
 
         <main>
           {/* New hero — scroll-driven frame animation with peacock imagery */}
@@ -118,6 +139,11 @@ export default function App() {
           <LazySection>
             {/* 3D Gallery with Three.js */}
             <Gallery3DSection />
+          </LazySection>
+
+          <LazySection>
+            {/* Zoom Parallax */}
+            <ZoomParallaxSection />
           </LazySection>
 
           <LazySection>

@@ -7,8 +7,6 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
 import * as THREE from 'three';
-import { useOnView } from '../../hooks/useOnView';
-
 gsap.registerPlugin(ScrollTrigger);
 
 // Award data
@@ -201,7 +199,7 @@ function CameraController() {
       scrollY.current = window.scrollY;
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -247,20 +245,26 @@ function AwardCard({ award, index }: { award: typeof awards[0]; index: number })
   const cardRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
   const [rotation, setRotation] = useState({ x: 0, y: 0 });
+  const rafRef = useRef<number>(0);
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!cardRef.current) return;
-    const rect = cardRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-    const rotateX = (y - centerY) / 20;
-    const rotateY = (centerX - x) / 20;
-    setRotation({ x: rotateX, y: rotateY });
+
+    cancelAnimationFrame(rafRef.current);
+    rafRef.current = requestAnimationFrame(() => {
+      const rect = cardRef.current!.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+      const rotateX = (y - centerY) / 20;
+      const rotateY = (centerX - x) / 20;
+      setRotation({ x: rotateX, y: rotateY });
+    });
   };
 
   const handleMouseLeave = () => {
+    cancelAnimationFrame(rafRef.current);
     setRotation({ x: 0, y: 0 });
     setIsHovered(false);
   };
@@ -317,9 +321,11 @@ function AwardCard({ award, index }: { award: typeof awards[0]; index: number })
 
 export default function AwardsSection() {
   const sectionRef = useRef<HTMLElement>(null);
-  const { ref: viewRef, isInView } = useOnView(0.1);
+  const [mounted, setMounted] = useState(false);
+
   const { scrollYProgress } = useScroll({
-    target: isInView ? sectionRef : null,
+    target: sectionRef,
+    container: sectionRef,
     offset: ['start end', 'end start']
   });
 
@@ -330,61 +336,74 @@ export default function AwardsSection() {
 
   const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
 
-  // GSAP animations
+  // Phase 1: Mark as mounted so React re-renders and paints children
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Phase 2: Initialize GSAP after the paint from the re-render
+  useEffect(() => {
+    if (!mounted) return;
+
     const ctx = gsap.context(() => {
       // Header animation with scroll
-      gsap.from('.awards-heading-line', {
-        y: 150,
-        opacity: 0,
-        rotateX: 90,
-        duration: 1.2,
-        stagger: 0.2,
-        ease: 'power3.out',
-        scrollTrigger: {
-          trigger: '.awards-header',
-          start: 'top 70%',
-          toggleActions: 'play none none reverse',
-        },
-      });
+      const headingLines = document.querySelectorAll('.awards-heading-line');
+      if (headingLines.length > 0) {
+        gsap.from(headingLines, {
+          y: 150,
+          opacity: 0,
+          rotateX: 90,
+          duration: 1.2,
+          stagger: 0.2,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: '.awards-header',
+            start: 'top 70%',
+            toggleActions: 'play none none reverse',
+          },
+        });
+      }
 
       // Achievement counters with stagger
-      gsap.from('.achievement-item', {
-        y: 80,
-        opacity: 0,
-        scale: 0.8,
-        duration: 1,
-        stagger: 0.15,
-        ease: 'elastic.out(1, 0.5)',
-        scrollTrigger: {
-          trigger: '.awards-achievements',
-          start: 'top 80%',
-          toggleActions: 'play none none reverse',
-        },
-      });
+      const achievementItems = document.querySelectorAll('.achievement-item');
+      if (achievementItems.length > 0) {
+        gsap.from(achievementItems, {
+          y: 80,
+          opacity: 0,
+          scale: 0.8,
+          duration: 1,
+          stagger: 0.15,
+          ease: 'elastic.out(1, 0.5)',
+          scrollTrigger: {
+            trigger: '.awards-achievements',
+            start: 'top 80%',
+            toggleActions: 'play none none reverse',
+          },
+        });
+      }
 
       // Parallax effect on background
-      gsap.to('.awards-bg-element', {
-        y: -100,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: 'top bottom',
-          end: 'bottom top',
-          scrub: true,
-        },
-      });
+      const bgElements = document.querySelectorAll('.awards-bg-element');
+      if (bgElements.length > 0) {
+        gsap.to(bgElements, {
+          y: -100,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: 'top bottom',
+            end: 'bottom top',
+            scrub: true,
+          },
+        });
+      }
     }, sectionRef);
 
     return () => ctx.revert();
-  }, []);
+  }, [mounted]);
 
   return (
     <section
-      ref={(el) => {
-        sectionRef.current = el;
-        (viewRef as React.MutableRefObject<HTMLElement | null>).current = el;
-      }}
+      ref={sectionRef}
       className="awards-section"
     >
       
@@ -395,7 +414,7 @@ export default function AwardsSection() {
 
       <motion.div
         className="awards-container"
-        style={{ y, opacity }}
+        style={{ y, opacity, position: 'relative', willChange: 'transform, opacity' }}
       >
         {/* Header */}
         <div className="awards-header">
@@ -441,6 +460,7 @@ export default function AwardsSection() {
           padding: 8rem 2rem;
           overflow: hidden;
           min-height: 100vh;
+          isolation: isolate;
         }
 
         .awards-canvas {

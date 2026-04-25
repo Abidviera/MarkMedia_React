@@ -54,28 +54,34 @@ export default function App() {
   }, []);
 
   // ─────────────────────────────────────────────────────────────
-  // UNIFIED SMOOTH SCROLL — Lenis + GSAP ScrollTrigger integration
-  // This is the single source of truth for all scroll behavior.
+  // LIGHTWEIGHT SMOOTH SCROLL — Native CSS + passive RAF sync
+  // Avoids blocking the wheel event handler at all costs.
   // ─────────────────────────────────────────────────────────────
   useEffect(() => {
     if (showWorkGallery) return;
 
-    // Create Lenis with ultra-smooth settings
+    // Lenis for its internal smooth interpolation, but we do NOT intercept wheel
     const lenis = new Lenis({
-      duration: 1.2,          // smooth, not too slow
+      duration: 0.8,
       easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       orientation: 'vertical',
-      smoothWheel: true,
+      smoothWheel: false,  // Don't intercept wheel — use native scroll, Lenis just interpolates
       syncTouch: false,
+      wheelMultiplier: 1,
+      touchMultiplier: 1,
+      infinite: false,
     });
 
     // ── Integrate Lenis with GSAP ScrollTrigger ──
-    // This makes GSAP read Lenis scroll values instead of native scroll,
-    // eliminating the conflict between the two systems.
-    lenis.on('scroll', ScrollTrigger.update);
-
-    // Lenis RAF loop — drives both Lenis and GSAP ticker
+    // KEY: ScrollTrigger.update() runs in the GSAP ticker, NOT on scroll events.
+    // This means scroll events are NEVER blocked by ScrollTrigger work.
+    // GSAP's ticker runs at 60fps and batches all ScrollTrigger updates naturally.
     gsap.ticker.lagSmoothing(0);
+    gsap.ticker.add(() => {
+      ScrollTrigger.update();
+    });
+
+    // Lenis RAF loop
     gsap.ticker.add((time: number) => {
       lenis.raf(time * 1000);
     });
@@ -84,6 +90,9 @@ export default function App() {
     (window as unknown as Record<string, unknown>).__lenis = lenis;
 
     return () => {
+      gsap.ticker.remove(() => {
+        ScrollTrigger.update();
+      });
       gsap.ticker.remove((time: number) => lenis.raf(time * 1000));
       lenis.destroy();
       delete (window as unknown as Record<string, unknown>).__lenis;
@@ -136,10 +145,7 @@ export default function App() {
             <BentoGrid />
           </LazySection>
 
-          <LazySection>
-            {/* 3D Gallery with Three.js */}
-            <Gallery3DSection />
-          </LazySection>
+          
 
           <LazySection>
             {/* Zoom Parallax */}
@@ -156,10 +162,7 @@ export default function App() {
             <StatsSection />
           </LazySection>
 
-          <LazySection>
-            {/* Team Talents */}
-            <TalentsSection />
-          </LazySection>
+       
 
           <LazySection>
             {/* Awards with 3D particles (Three.js) */}

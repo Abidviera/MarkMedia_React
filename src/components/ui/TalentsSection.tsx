@@ -53,22 +53,39 @@ export default function TalentsSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
   const [hoveredId, setHoveredId] = useState<number | null>(null);
+  const [mounted, setMounted] = useState(false);
 
+  // Phase 1: Mark as mounted so React re-renders and paints children
   useEffect(() => {
-    const ctx = gsap.context(() => {
+    setMounted(true);
+  }, []);
+
+  // Phase 2: Initialize GSAP after the paint from the re-render
+  useEffect(() => {
+    if (!mounted) return;
+
+    let cleanup: (() => void) | undefined;
+
+    // Defer by two full paint cycles so lazy-loaded DOM elements are painted first
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const ctx = gsap.context(() => {
       // Animate section header
-      gsap.from('.talents-heading-line', {
-        y: 100,
-        opacity: 0,
-        duration: 1,
-        stagger: 0.15,
-        ease: 'power3.out',
-        scrollTrigger: {
-          trigger: '.talents-header',
-          start: 'top 70%',
-          toggleActions: 'play none none reverse',
-        },
-      });
+      const headingLines = document.querySelectorAll('.talents-heading-line');
+      if (headingLines.length > 0) {
+        gsap.from(headingLines, {
+          y: 100,
+          opacity: 0,
+          duration: 1,
+          stagger: 0.15,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: '.talents-header',
+            start: 'top 70%',
+            toggleActions: 'play none none reverse',
+          },
+        });
+      }
 
       // Animate cards with stagger
       cardsRef.current.forEach((card, i) => {
@@ -88,22 +105,27 @@ export default function TalentsSection() {
         });
       });
 
-      // Animate background text
-      gsap.from('.talents-bg-text', {
-        x: 100,
-        opacity: 0,
-        duration: 1.5,
-        ease: 'power3.out',
-        scrollTrigger: {
-          trigger: '.talents-section',
-          start: 'top 80%',
-          toggleActions: 'play none none reverse',
-        },
-      });
+      // Animate background text — use sectionRef.current as trigger since sectionRef IS .talents-section
+      const bgText = sectionRef.current?.querySelector('.talents-bg-text');
+      if (bgText && sectionRef.current) {
+        gsap.from(bgText, {
+          x: 100,
+          opacity: 0,
+          duration: 1.5,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: 'top 80%',
+            toggleActions: 'play none none reverse',
+          },
+        });
+      }
     }, sectionRef);
-
-    return () => ctx.revert();
-  }, []);
+        cleanup = ctx.revert;
+      });
+    });
+    return () => { if (cleanup) cleanup(); };
+  }, [mounted]);
 
   return (
     <section ref={sectionRef} className="talents-section">

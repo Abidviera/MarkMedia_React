@@ -36,7 +36,7 @@ const images = [
 export default function ZoomParallaxSection() {
 	return (
 		<section className="relative w-full">
-			<div className="relative flex h-[50vh] items-center justify-center">
+			<div className="relative z-20 flex h-[50vh] items-center justify-center">
 				<div
 					aria-hidden="true"
 					className={cn(
@@ -45,9 +45,28 @@ export default function ZoomParallaxSection() {
 						'blur-[30px]',
 					)}
 				/>
-				<h2 className="text-center text-4xl font-bold">
-					Scroll Down for Zoom Parallax
-				</h2>
+				<div className="text-center">
+					<span className="text-sm font-semibold tracking-widest text-red-600 uppercase">
+						Portfolio
+					</span>
+					<h2
+						className="mt-2 text-[120px] leading-[0.9] font-bold tracking-tight"
+						style={{ color: '#000000' }}
+					>
+						VISUAL
+					</h2>
+					<h2
+						className="text-[120px] leading-[0.9] font-bold tracking-tight text-transparent"
+						style={{
+							WebkitTextStroke: '2px rgba(0,0,0,0.5)',
+						}}
+					>
+						GALLERY
+					</h2>
+					<p className="mt-4 text-base text-muted-foreground">
+						Explore our collection of stunning visual stories
+					</p>
+				</div>
 			</div>
 			<ZoomParallax images={images} />
 			<div className="h-[50vh]" />

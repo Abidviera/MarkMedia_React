@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -52,22 +52,39 @@ const projects = [
 export default function BentoGrid() {
   const gridRef = useRef<HTMLDivElement>(null);
   const itemsRef = useRef<(HTMLDivElement | null)[]>([]);
+  const [mounted, setMounted] = useState(false);
 
+  // Phase 1: Mark as mounted so React re-renders and paints children
   useEffect(() => {
-    const ctx = gsap.context(() => {
+    setMounted(true);
+  }, []);
+
+  // Phase 2: Initialize GSAP after the paint from the re-render
+  useEffect(() => {
+    if (!mounted) return;
+
+    let cleanup: (() => void) | undefined;
+
+    // Defer by two full paint cycles so lazy-loaded DOM elements are painted first
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const ctx = gsap.context(() => {
       // Animate header
-      gsap.from('.bento-heading-line', {
-        y: 100,
-        opacity: 0,
-        duration: 1,
-        stagger: 0.15,
-        ease: 'power3.out',
-        scrollTrigger: {
-          trigger: '.bento-header',
-          start: 'top 70%',
-          toggleActions: 'play none none reverse',
-        },
-      });
+      const headingLines = document.querySelectorAll('.bento-heading-line');
+      if (headingLines.length > 0) {
+        gsap.from(headingLines, {
+          y: 100,
+          opacity: 0,
+          duration: 1,
+          stagger: 0.15,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: '.bento-header',
+            start: 'top 70%',
+            toggleActions: 'play none none reverse',
+          },
+        });
+      }
 
       // Animate each bento item with staggered reveal
       itemsRef.current.forEach((item, i) => {
@@ -112,22 +129,27 @@ export default function BentoGrid() {
         }
       });
 
-      // Background text animation
-      gsap.from('.bento-bg-text', {
-        x: -100,
-        opacity: 0,
-        duration: 1.5,
-        ease: 'power3.out',
-        scrollTrigger: {
-          trigger: '.bento-section',
-          start: 'top 80%',
-          toggleActions: 'play none none reverse',
-        },
-      });
+      // Background text animation — use gridRef.current as trigger since gridRef IS .bento-section
+      const bgText = gridRef.current?.querySelector('.bento-bg-text');
+      if (bgText && gridRef.current) {
+        gsap.from(bgText, {
+          x: -100,
+          opacity: 0,
+          duration: 1.5,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: gridRef.current,
+            start: 'top 80%',
+            toggleActions: 'play none none reverse',
+          },
+        });
+      }
     }, gridRef);
-
-    return () => ctx.revert();
-  }, []);
+        cleanup = ctx.revert;
+      });
+    });
+    return () => { if (cleanup) cleanup(); };
+  }, [mounted]);
 
   return (
     <section ref={gridRef} className="bento-section">

@@ -43,40 +43,55 @@ const testimonials = [
 export default function TestimonialsSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [mounted, setMounted] = useState(false);
 
+  // Phase 1: Mark as mounted so React re-renders and paints children
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Phase 2: Initialize GSAP after the paint from the re-render
+  useEffect(() => {
+    if (!mounted) return;
+
     const ctx = gsap.context(() => {
       // Header animation
-      gsap.from('.testimonial-heading-line', {
-        y: 100,
-        opacity: 0,
-        duration: 1,
-        stagger: 0.15,
-        ease: 'power3.out',
-        scrollTrigger: {
-          trigger: '.testimonials-header',
-          start: 'top 70%',
-          toggleActions: 'play none none reverse',
-        },
-      });
+      const headingLines = document.querySelectorAll('.testimonial-heading-line');
+      if (headingLines.length > 0) {
+        gsap.from(headingLines, {
+          y: 100,
+          opacity: 0,
+          duration: 1,
+          stagger: 0.15,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: '.testimonials-header',
+            start: 'top 70%',
+            toggleActions: 'play none none reverse',
+          },
+        });
+      }
 
       // Cards animation
-      gsap.from('.testimonial-card', {
-        y: 80,
-        opacity: 0,
-        duration: 0.8,
-        stagger: 0.15,
-        ease: 'power3.out',
-        scrollTrigger: {
-          trigger: '.testimonials-grid',
-          start: 'top 80%',
-          toggleActions: 'play none none reverse',
-        },
-      });
+      const cards = document.querySelectorAll('.testimonial-card');
+      if (cards.length > 0) {
+        gsap.from(cards, {
+          y: 80,
+          opacity: 0,
+          duration: 0.8,
+          stagger: 0.15,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: '.testimonials-grid',
+            start: 'top 80%',
+            toggleActions: 'play none none reverse',
+          },
+        });
+      }
     }, sectionRef);
 
     return () => ctx.revert();
-  }, []);
+  }, [mounted]);
 
   // Auto-rotate testimonials
   useEffect(() => {

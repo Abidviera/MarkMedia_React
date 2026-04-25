@@ -3,16 +3,19 @@
 @import "tailwindcss";
 
 /* =============================================
-   SMOOTH SCROLL OPTIMIZATIONS
+   ULTRA-SMOOTH SCROLL OPTIMIZATIONS
    ============================================= */
 
-/* Disable scroll anchoring to prevent layout jumps */
+/* Native smooth scrolling — zero JS overhead, hardware-accelerated */
 html {
   overflow-anchor: none;
-  scroll-behavior: auto; /* Lenis handles smoothness, browser auto is faster */
+  scroll-behavior: smooth;
+  scroll-padding-top: 0px;
 }
 
-/* GPU acceleration layer for all animated elements */
+/* ── GPU acceleration layer for all animated elements ──
+   Promotes elements to their own compositor layer so transforms
+   happen on the GPU, not the main thread. */
 .gsap-animated,
 [data-gsap],
 .gallery-item,

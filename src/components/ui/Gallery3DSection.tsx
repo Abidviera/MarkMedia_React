@@ -7,8 +7,6 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { motion, AnimatePresence, useScroll, useTransform, useSpring } from 'framer-motion';
 import * as THREE from 'three';
-import { useOnView } from '../../hooks/useOnView';
-
 gsap.registerPlugin(ScrollTrigger);
 
 const galleryImages = [
@@ -234,12 +232,12 @@ const GalleryItem = forwardRef(function GalleryItem({ image, index, onClick }: {
 
 export default function Gallery3DSection() {
   const sectionRef = useRef<HTMLElement>(null);
-  const { ref: viewRef, isInView } = useOnView(0.1);
   const [selectedImage, setSelectedImage] = useState<typeof galleryImages[0] | null>(null);
   const [activeCategory, setActiveCategory] = useState('All');
 
   const { scrollYProgress } = useScroll({
-    target: isInView ? sectionRef : null,
+    target: sectionRef,
+    container: sectionRef,
     offset: ['start end', 'end start']
   });
 
@@ -286,10 +284,7 @@ export default function Gallery3DSection() {
 
   return (
     <section
-      ref={(el) => {
-        sectionRef.current = el;
-        (viewRef as React.MutableRefObject<HTMLElement | null>).current = el;
-      }}
+      ref={sectionRef}
       className="gallery-section"
     >
     
@@ -297,7 +292,7 @@ export default function Gallery3DSection() {
       {/* Gradient Overlays */}
       <div className="gallery-gradient-top" />
 
-      <motion.div className="gallery-container" style={{ y }}>
+      <motion.div className="gallery-container" style={{ y, willChange: 'transform' }}>
         {/* Header */}
         <div className="gallery-header">
           <motion.p

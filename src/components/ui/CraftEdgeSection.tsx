@@ -6,7 +6,6 @@ gsap.registerPlugin(ScrollTrigger);
 
 export default function CraftEdgeSection() {
   const sectionRef = useRef<HTMLElement>(null);
-  const headerRef = useRef<HTMLElement>(null);
   const bottleWrapperRef = useRef<HTMLDivElement>(null);
   const bottleRef = useRef<HTMLImageElement>(null);
   const stampRef = useRef<HTMLImageElement>(null);
@@ -29,205 +28,240 @@ export default function CraftEdgeSection() {
   useEffect(() => {
     if (isMobile) return;
 
-    const ctx = gsap.context(() => {
-      const header = headerRef.current;
-      const section = sectionRef.current;
+    // Defer to next paint so lazy-loaded DOM is ready
+    const rafId = requestAnimationFrame(() => {
+      const ctx = gsap.context(() => {
+        const section = sectionRef.current;
 
-      // ==========================
-      // Initial Page Load Animations
-      // ==========================
+        // ==========================
+        // Initial Page Load Animations
+        // ==========================
 
-      const onLoadTl = gsap.timeline({
-        defaults: { ease: 'power2.out' },
-        scrollTrigger: {
-          trigger: section,
-          start: 'top 80%',
-          toggleActions: 'play none none none',
-        },
-      });
-
-      onLoadTl
-        // Animate header border width expansion
-        .to('header', {
-          '--border-width': '100%',
-          duration: 3,
-        }, 0)
-        // Slide in desktop nav links from above
-        .from('.desktop-nav a', {
-          y: -100,
-          opacity: 0,
-          duration: 0.8,
-          stagger: 0.2,
-          ease: 'power3.out',
-        }, 0)
-        // Fade in hero heading
-        .to('.hero-content h1', {
-          opacity: 1,
-          duration: 1,
-        }, 0)
-        // Animate text stroke to solid black color
-        .to('.hero-content h1', {
-          delay: 0.5,
-          duration: 1.2,
-          color: '#000000',
-          WebkitTextStroke: '0px #000000',
-        }, 0)
-        // Slide in each line of the heading from the right
-        .from('.hero-content .line', {
-          x: 100,
-          delay: 1,
-          opacity: 0,
-          duration: 0.8,
-          stagger: 0.2,
-          ease: 'power3.out',
-        }, 0)
-        // Pop-in stamp image with scaling
-        .to('.hero-stamp', {
-          opacity: 1,
-          scale: 1,
-          delay: 2,
-          duration: 0.2,
-          ease: 'back.out(3)',
-        }, 0)
-        // Subtle vibration/bounce effect on the stamp
-        .to('.hero-stamp', {
-          y: '+=5',
-          x: '-=3',
-          repeat: 2,
-          yoyo: true,
-          duration: 0.05,
-          ease: 'power1.inOut',
-        }, 0);
-
-      // ==========================
-      // Scroll-Based Animations
-      // ==========================
-
-      const headerOffset = header?.offsetHeight || 80;
-
-      // 0. Bottle enters tied to scroll progress
-      gsap.timeline({
-        scrollTrigger: {
-          trigger: '.hero',
-          start: 'top 75%',
-          end: `top top+=${headerOffset}`,
-          scrub: 1,
-        },
-      })
-        .to('.hero-bottle-wrapper', {
-          opacity: 1,
-          scale: 1,
-          ease: 'none',
+        const onLoadTl = gsap.timeline({
+          defaults: { ease: 'power2.out' },
+          scrollTrigger: {
+            trigger: section,
+            start: 'top 80%',
+            toggleActions: 'play none none none',
+          },
         });
 
-      // 1. Bottle animates on scroll from hero to intro
-      gsap.timeline({
-        scrollTrigger: {
-          trigger: '.hero',
-          start: `top top+=${headerOffset}`,
-          endTrigger: '.section-intro',
-          end: `top top+=${headerOffset}`,
-          scrub: 1,
-          pin: '.hero-bottle-wrapper',
-          pinSpacing: false,
-          invalidateOnRefresh: true,
-        },
-      })
-        .to('.hero-bottle', {
-          rotate: 0,
-          scale: 0.8,
-          duration: 1,
-        });
+        // These target global Navigation elements — use document.querySelector
+        const globalHeader = document.querySelector('header');
+        const navLinks = document.querySelectorAll('.desktop-nav a');
 
-      // 2. Bottle shifts right during the intro section
-      gsap.timeline({
-        scrollTrigger: {
-          trigger: '.section-intro',
-          start: `top top+=${headerOffset}`,
-          endTrigger: '.timeline-entry:nth-child(even)',
-          end: `top top+=${headerOffset}`,
-          scrub: 1,
-          pin: '.hero-bottle-wrapper',
-          pinSpacing: false,
-          invalidateOnRefresh: true,
-        },
-      })
-        .to('.hero-bottle', {
-          rotate: 10,
-          scale: 0.7,
-          duration: 1,
-        })
-        .to('.hero-bottle-wrapper', {
-          x: '30%',
-          duration: 1,
-        }, 0);
+        if (globalHeader) {
+          onLoadTl
+            .to(globalHeader, {
+              '--border-width': '100%',
+              duration: 3,
+            }, 0);
+        }
 
-      // 3. Bottle shifts left during the first timeline entry
-      gsap.timeline({
-        scrollTrigger: {
-          trigger: '.timeline-entry:nth-child(even)',
-          start: `top top+=${headerOffset}`,
-          endTrigger: '.timeline-entry:nth-child(odd)',
-          end: `top top+=${headerOffset}`,
-          scrub: 1,
-          pin: '.hero-bottle-wrapper',
-          pinSpacing: false,
-          invalidateOnRefresh: true,
-        },
-      })
-        .to('.hero-bottle', {
-          rotate: -10,
-          scale: 0.7,
-          duration: 1,
-        })
-        .to('.hero-bottle-wrapper', {
-          x: '-25%',
-          duration: 1,
-        }, 0);
+        if (navLinks.length > 0) {
+          onLoadTl
+            .from(navLinks, {
+              y: -100,
+              opacity: 0,
+              duration: 0.8,
+              stagger: 0.2,
+              ease: 'power3.out',
+            }, 0);
+        }
 
-      // Timeline animations on scroll
-      gsap.from('.timeline-entry', {
-        opacity: 0,
-        y: 100,
-        duration: 1,
-        stagger: 0.3,
-        ease: 'power3.out',
-        scrollTrigger: {
-          trigger: '.timeline-section',
-          start: 'top 70%',
-          toggleActions: 'play none none reverse',
-        },
-      });
+        onLoadTl
+          // Fade in hero heading
+          .to('.hero-content h1', {
+            opacity: 1,
+            duration: 1,
+          }, 0)
+          // Animate text stroke to solid black color
+          .to('.hero-content h1', {
+            delay: 0.5,
+            duration: 1.2,
+            color: '#000000',
+            WebkitTextStroke: '0px #000000',
+          }, 0)
+          // Slide in each line of the heading from the right
+          .from('.hero-content .line', {
+            x: 100,
+            delay: 1,
+            opacity: 0,
+            duration: 0.8,
+            stagger: 0.2,
+            ease: 'power3.out',
+          }, 0)
+          // Pop-in stamp image with scaling
+          .to('.hero-stamp', {
+            opacity: 1,
+            scale: 1,
+            delay: 2,
+            duration: 0.2,
+            ease: 'back.out(3)',
+          }, 0)
+          // Subtle vibration/bounce effect on the stamp
+          .to('.hero-stamp', {
+            y: '+=5',
+            x: '-=3',
+            repeat: 2,
+            yoyo: true,
+            duration: 0.05,
+            ease: 'power1.inOut',
+          }, 0);
 
-      gsap.from('.timeline-date', {
-        y: 50,
-        duration: 0.8,
-        stagger: 0.3,
-        ease: 'power3.out',
-        scrollTrigger: {
-          trigger: '.timeline-section',
-          start: 'top 70%',
-          toggleActions: 'play none none reverse',
-        },
-      });
+        // ==========================
+        // Scroll-Based Animations
+        // ==========================
 
-      // Ingredients animation
-      gsap.from('.ingredient-item', {
-        x: 100,
-        opacity: 0,
-        duration: 0.8,
-        stagger: 0.15,
-        ease: 'power3.out',
-        scrollTrigger: {
-          trigger: '.section-intro',
-          start: 'top 60%',
-          toggleActions: 'play none none reverse',
-        },
-      });
+        const headerOffset = 80;
+        const heroEl = document.querySelector('.hero');
+        const bottleWrapper = document.querySelector('.hero-bottle-wrapper');
+        const bottle = document.querySelector('.hero-bottle');
+        const sectionIntro = document.querySelector('.section-intro');
+        const evenEntry = document.querySelector('.timeline-entry:nth-child(even)');
+        const oddEntry = document.querySelector('.timeline-entry:nth-child(odd)');
 
-    }, sectionRef);
+        // 0. Bottle enters tied to scroll progress
+        if (heroEl && bottleWrapper) {
+          gsap.timeline({
+            scrollTrigger: {
+              trigger: heroEl,
+              start: 'top 75%',
+              end: `top top+=${headerOffset}`,
+              scrub: 1,
+            },
+          }).to(bottleWrapper, {
+            opacity: 1,
+            scale: 1,
+            ease: 'none',
+          });
+        }
 
-    return () => ctx.revert();
+        // 1. Bottle animates on scroll from hero to intro
+        if (heroEl && sectionIntro && bottleWrapper && bottle) {
+          gsap.timeline({
+            scrollTrigger: {
+              trigger: heroEl,
+              start: `top top+=${headerOffset}`,
+              endTrigger: sectionIntro,
+              end: `top top+=${headerOffset}`,
+              scrub: 1,
+              pin: bottleWrapper,
+              pinSpacing: false,
+              invalidateOnRefresh: true,
+            },
+          }).to(bottle, {
+            rotate: 0,
+            scale: 0.8,
+            duration: 1,
+          });
+        }
+
+        // 2. Bottle shifts right during the intro section
+        if (sectionIntro && evenEntry && bottleWrapper && bottle) {
+          gsap.timeline({
+            scrollTrigger: {
+              trigger: sectionIntro,
+              start: `top top+=${headerOffset}`,
+              endTrigger: evenEntry,
+              end: `top top+=${headerOffset}`,
+              scrub: 1,
+              pin: bottleWrapper,
+              pinSpacing: false,
+              invalidateOnRefresh: true,
+            },
+          })
+            .to(bottle, {
+              rotate: 10,
+              scale: 0.7,
+              duration: 1,
+            })
+            .to(bottleWrapper, {
+              x: '30%',
+              duration: 1,
+            }, 0);
+        }
+
+        // 3. Bottle shifts left during the first timeline entry
+        if (evenEntry && oddEntry && bottleWrapper && bottle) {
+          gsap.timeline({
+            scrollTrigger: {
+              trigger: evenEntry,
+              start: `top top+=${headerOffset}`,
+              endTrigger: oddEntry,
+              end: `top top+=${headerOffset}`,
+              scrub: 1,
+              pin: bottleWrapper,
+              pinSpacing: false,
+              invalidateOnRefresh: true,
+            },
+          })
+            .to(bottle, {
+              rotate: -10,
+              scale: 0.7,
+              duration: 1,
+            })
+            .to(bottleWrapper, {
+              x: '-25%',
+              duration: 1,
+            }, 0);
+        }
+
+        // Timeline animations on scroll
+        const timelineEntries = document.querySelectorAll('.timeline-entry');
+        if (timelineEntries.length > 0) {
+          gsap.from(timelineEntries, {
+            opacity: 0,
+            y: 100,
+            duration: 1,
+            stagger: 0.3,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: '.timeline-section',
+              start: 'top 70%',
+              toggleActions: 'play none none reverse',
+            },
+          });
+        }
+
+        const timelineDates = document.querySelectorAll('.timeline-date');
+        if (timelineDates.length > 0) {
+          gsap.from(timelineDates, {
+            y: 50,
+            duration: 0.8,
+            stagger: 0.3,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: '.timeline-section',
+              start: 'top 70%',
+              toggleActions: 'play none none reverse',
+            },
+          });
+        }
+
+        // Ingredients animation
+        const ingredients = document.querySelectorAll('.ingredient-item');
+        if (ingredients.length > 0) {
+          gsap.from(ingredients, {
+            x: 100,
+            opacity: 0,
+            duration: 0.8,
+            stagger: 0.15,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: '.section-intro',
+              start: 'top 60%',
+              toggleActions: 'play none none reverse',
+            },
+          });
+        }
+
+      }, sectionRef);
+
+      return () => ctx.revert();
+    });
+
+    return () => cancelAnimationFrame(rafId);
   }, [isMobile]);
 
   // ==========================

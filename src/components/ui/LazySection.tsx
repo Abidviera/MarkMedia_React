@@ -52,7 +52,14 @@ export default function LazySection({
   }, [threshold, rootMargin, once]);
 
   return (
-    <div ref={ref} className={className} data-lazy-section="">
+    <div
+      ref={ref}
+      className={className}
+      data-lazy-section=""
+      style={{
+        position: 'relative',
+      }}
+    >
       {isVisible ? children : null}
     </div>
   );

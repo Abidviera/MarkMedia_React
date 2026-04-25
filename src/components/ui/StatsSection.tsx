@@ -7,8 +7,6 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { motion, useScroll, useTransform, useSpring, AnimatePresence } from 'framer-motion';
 import * as THREE from 'three';
-import { useOnView } from '../../hooks/useOnView';
-
 gsap.registerPlugin(ScrollTrigger);
 
 const stats = [
@@ -392,10 +390,9 @@ function StatCard({ stat, index }: { stat: typeof stats[0]; index: number }) {
 
 export default function StatsSection() {
   const sectionRef = useRef<HTMLElement>(null);
-  const { ref: viewRef, isInView } = useOnView(0.1);
-
   const { scrollYProgress } = useScroll({
-    target: isInView ? sectionRef : null,
+    target: sectionRef,
+    container: sectionRef,
     offset: ['start end', 'end start']
   });
 
@@ -465,10 +462,7 @@ export default function StatsSection() {
 
   return (
     <section
-      ref={(el) => {
-        sectionRef.current = el;
-        (viewRef as React.MutableRefObject<HTMLElement | null>).current = el;
-      }}
+      ref={sectionRef}
       className="stats-section"
     >
       {/* 3D Background Canvas */}
@@ -495,7 +489,7 @@ export default function StatsSection() {
         transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
       />
 
-      <motion.div className="stats-container" style={{ y, opacity }}>
+      <motion.div className="stats-container" style={{ y, opacity, willChange: 'transform, opacity' }}>
         {/* Header */}
         <div className="stats-header">
           <motion.p

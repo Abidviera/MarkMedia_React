@@ -1,0 +1,28 @@
+.zoom-parallax-container {
+  position: relative;
+  height: 300vh;
+  background: var(--bg-secondary);
+}
+
+.zoom-parallax-sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+}
+
+.zoom-parallax-image {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+}
+
+[data-theme="dark"] .zoom-parallax-image img {
+  filter: brightness(0.9) contrast(1.1);
+}
+
+.zoom-parallax-header {
+  position: relative;
+  z-index: 10;
+  background: var(--bg-primary);
+}

@@ -13,69 +13,82 @@ export default function Preloader() {
   useEffect(() => {
     if (!isMounted) return;
 
-    const tl = gsap.timeline({
-      onComplete: () => {
-        gsap.to('.preloader', {
-          opacity: 0,
-          duration: 0.6,
-          ease: 'power2.inOut',
-          onComplete: () => setIsVisible(false),
-        });
-      },
-    });
+    // Check elements exist before animating
+    const preloader = document.querySelector('.preloader');
+    const preloaderContent = document.querySelector('.preloader-content');
+    const preloaderLetters = document.querySelectorAll('.preloader-letter');
+    const progressWrapper = document.querySelector('.preloader-progress-wrapper');
+    const progressBar = document.querySelector('.preloader-progress');
+    const preloaderText = document.querySelector('.preloader-text');
+    const preloaderDots = document.querySelectorAll('.preloader-dot');
 
-    // Initial states
-    gsap.set('.preloader-content', { opacity: 0 });
-    gsap.set('.preloader-letter', { y: 60, opacity: 0 });
-    gsap.set('.preloader-progress-wrapper', { opacity: 0 });
-    gsap.set('.preloader-progress', { scaleX: 0, transformOrigin: 'left center' });
-    gsap.set('.preloader-text', { opacity: 0 });
+    if (!preloader || !preloaderContent || !progressBar) return;
 
-    // Animate content container
-    tl.to('.preloader-content', {
-      opacity: 1,
-      duration: 0.4,
-      ease: 'power2.out',
-    });
+    // Set initial states
+    gsap.set(preloaderContent, { opacity: 0 });
+    gsap.set(preloaderLetters, { y: 60, opacity: 0 });
+    gsap.set(progressWrapper, { opacity: 0 });
+    gsap.set(progressBar, { scaleX: 0, transformOrigin: 'left center' });
+    gsap.set(preloaderText, { opacity: 0 });
 
-    // Animate letters
-    tl.to('.preloader-letter', {
-      y: 0,
-      opacity: 1,
-      duration: 0.5,
-      stagger: 0.03,
-      ease: 'power3.out',
-    }, '-=0.2');
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({
+        onComplete: () => {
+          gsap.to(preloader, {
+            opacity: 0,
+            duration: 0.6,
+            ease: 'power2.inOut',
+            onComplete: () => {
+              // Only hide if preloader element is still in DOM
+              if (document.contains(preloader)) {
+                setIsVisible(false);
+              }
+            },
+          });
+        },
+      });
 
-    // Show progress wrapper
-    tl.to('.preloader-progress-wrapper', {
-      opacity: 1,
-      duration: 0.2,
-    }, '-=0.2');
+      tl.to(preloaderContent, {
+        opacity: 1,
+        duration: 0.4,
+        ease: 'power2.out',
+      });
 
-    // Animate progress bar
-    tl.to('.preloader-progress', {
-      scaleX: 1,
-      duration: 2,
-      ease: 'power2.inOut',
-    }, '-=0.2');
+      tl.to(preloaderLetters, {
+        y: 0,
+        opacity: 1,
+        duration: 0.5,
+        stagger: 0.03,
+        ease: 'power3.out',
+      }, '-=0.2');
 
-    // Show text
-    tl.to('.preloader-text', {
-      opacity: 1,
-      duration: 0.3,
-    }, '-=1.5');
+      tl.to(progressWrapper, {
+        opacity: 1,
+        duration: 0.2,
+      }, '-=0.2');
 
-    // Animate dots
-    tl.to('.preloader-dot', {
-      opacity: 0.3,
-      duration: 0.3,
-      stagger: 0.1,
-      repeat: 4,
-      yoyo: true,
-      ease: 'power1.inOut',
-    }, '-=2');
+      tl.to(progressBar, {
+        scaleX: 1,
+        duration: 2,
+        ease: 'power2.inOut',
+      }, '-=0.2');
 
+      tl.to(preloaderText, {
+        opacity: 1,
+        duration: 0.3,
+      }, '-=1.5');
+
+      tl.to(preloaderDots, {
+        opacity: 0.3,
+        duration: 0.3,
+        stagger: 0.1,
+        repeat: 4,
+        yoyo: true,
+        ease: 'power1.inOut',
+      }, '-=2');
+    }, preloader);
+
+    return () => ctx.revert();
   }, [isMounted]);
 
   if (!isVisible) return null;

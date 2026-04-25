@@ -14,7 +14,7 @@ interface ZoomParallaxProps {
 }
 
 export function ZoomParallax({ images }: ZoomParallaxProps) {
-	const container = useRef(null);
+	const container = useRef<HTMLDivElement>(null);
 	const { scrollYProgress } = useScroll({
 		target: container,
 		offset: ['start start', 'end end'],

@@ -1,17 +1,8 @@
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 
-// Only use first 30 images to avoid blocking the main thread
-const markphotosImages = [
-  '/markphotos/10.webp', '/markphotos/18.webp', '/markphotos/19.webp', '/markphotos/2.webp',
-  '/markphotos/21.webp', '/markphotos/4.webp', '/markphotos/5.webp', '/markphotos/7.webp',
-  '/markphotos/8.webp', '/markphotos/9.webp', '/markphotos/ADS_1648.webp', '/markphotos/ADS_2288.webp',
-  '/markphotos/ADS_2353.webp', '/markphotos/ADS_2817.webp', '/markphotos/ADS_2857.webp', '/markphotos/ADS_2860.webp',
-  '/markphotos/ADS_3935.webp', '/markphotos/ADS_3946.webp', '/markphotos/ADS_3949.webp', '/markphotos/DSC_1215.webp',
-  '/markphotos/DSC_1322.webp', '/markphotos/DSC_1327.webp', '/markphotos/DSC_1371.webp', '/markphotos/DSC_1374.webp',
-  '/markphotos/DSC_1376.webp', '/markphotos/DSC_1829.webp', '/markphotos/DSC_1839.webp', '/markphotos/DSC_2974.webp',
-  '/markphotos/DSC_2998.webp', '/markphotos/DSC_3298.webp',
-];
+const TMDB_API_KEY = '17f6c7973c2ed29ef001953add2d04d3';
+const PEACOCK_PROVIDER = [386, 387];
 
 declare global {
   interface Window {
@@ -127,6 +118,7 @@ export default function PeacockHero() {
       let disableAnimate = urlParams.get('disableAnimate');
       const posterCollection: THREE.Group[] = [];
 
+      // Use exact same poster dimensions as HTML (40x27), texture.repeat crops to match
       const posterSize = {
         h: 40,
         w: 27,
@@ -142,9 +134,32 @@ export default function PeacockHero() {
       };
 
       const canvas = document.createElement('canvas');
+
+      // Gracefully handle WebGL unavailability
+      const probeCtx = canvas.getContext('webgl2') || canvas.getContext('webgl');
+      if (!probeCtx) {
+        console.warn('PeacockHero: WebGL not available, skipping 3D scene');
+        return;
+      }
+
       const scene = new THREE.Scene();
-      const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
-      renderer.setPixelRatio(window.devicePixelRatio);
+      let renderer: THREE.WebGLRenderer;
+
+      try {
+        renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      } catch {
+        console.warn('PeacockHero: WebGL context creation failed');
+        return;
+      }
+
+      // Handle WebGL context loss gracefully
+      const handleContextLost = (e: Event) => {
+        e.preventDefault();
+        disableAnimate = 'true';
+        console.warn('PeacockHero: WebGL context lost, pausing animation');
+      };
+      canvas.addEventListener('webglcontextlost', handleContextLost);
 
       const posterShape = new THREE.Shape();
       const roundedRect = (ctx: THREE.Shape, x: number, y: number, width: number, height: number, radius: number) => {
@@ -205,22 +220,8 @@ export default function PeacockHero() {
         }
       };
 
-      const animate = () => {
-        if (frameCount % 2 === 0) {
-          if (!scrollStatus && !disableAnimate) {
-            scrollPosters(1.2);
-          }
-          frameCount = 1;
-          assetGroup.position.y = assetGroupY;
-          renderer.render(scene, camera);
-        } else {
-          frameCount++;
-        }
-        animationId = requestAnimationFrame(animate);
-      };
-
-      const shuffleList = (list: unknown[]) => {
-        const newList: unknown[] = [];
+      const shuffleList = <T,>(list: T[]): T[] => {
+        const newList: T[] = [];
         while (list.length > 0) {
           const random = Math.floor(Math.random() * list.length);
           newList.push(list.splice(random, 1)[0]);
@@ -228,15 +229,49 @@ export default function PeacockHero() {
         return newList;
       };
 
+      const fetchAndStore = <T,>(key: string, url: string): Promise<T> => {
+        const stored = localStorage.getItem(key);
+        if (stored) {
+          return Promise.resolve(JSON.parse(stored) as T);
+        }
+        return fetch(url)
+          .then(res => res.json())
+          .then(data => {
+            localStorage.setItem(key, JSON.stringify(data));
+            return data as T;
+          });
+      };
+
+      const fetchConfig = () =>
+        fetchAndStore<{ images: { secure_base_url: string; poster_sizes: string[] } }>(
+          'tmdbConfig',
+          `https://api.themoviedb.org/3/configuration?api_key=${TMDB_API_KEY}`
+        );
+
+      const fetchAssetList = (type: 'tv' | 'movie', page: number) => {
+        const url = `https://api.themoviedb.org/3/discover/${type}?api_key=${TMDB_API_KEY}&include_adult=true&sort_by=popularity.desc&language=en-US&page=${page}&watch_region=US&with_watch_providers=${PEACOCK_PROVIDER.join('|')}&with_networks=3353`;
+        return fetchAndStore(`tmdbAssetList${type}${page}`, url) as Promise<{ results: { poster_path: string; name?: string; title?: string }[] }>;
+      };
+
+      // Load textures one at a time with a yield between each to avoid blocking the main thread
       const initScene = async () => {
-        const imageList = shuffleList([...markphotosImages]).splice(0, posterSize.cols * posterSize.rows);
+        const config = await fetchConfig();
+        const assetList = shuffleList([
+          ...(await fetchAssetList('tv', 1)).results,
+          ...(await fetchAssetList('tv', 2)).results,
+          ...(await fetchAssetList('tv', 3)).results,
+          ...(await fetchAssetList('movie', 1)).results,
+          ...(await fetchAssetList('movie', 2)).results,
+          ...(await fetchAssetList('movie', 3)).results,
+        ]).filter(asset => asset.poster_path).splice(0, posterSize.cols * posterSize.rows);
+
         const textureLoader = new THREE.TextureLoader();
         let x = 0;
         let y = 0;
         let rowGroup: THREE.Group;
 
-        for (let i = 0; i < imageList.length; i++) {
-          const url = imageList[i] as string;
+        for (let i = 0; i < assetList.length; i++) {
+          const asset = assetList[i];
           if (i % posterSize.cols === 0) {
             y += posterSize.h + posterSize.padding;
             x = 0;
@@ -248,81 +283,72 @@ export default function PeacockHero() {
             x += posterSize.w + posterSize.padding;
           }
 
-          const posterTexture = await textureLoader.loadAsync(url);
-          posterTexture.colorSpace = THREE.SRGBColorSpace;
-          posterTexture.wrapS = posterTexture.wrapT = THREE.RepeatWrapping;
-          posterTexture.repeat.set(0.037, 0.025);
+          try {
+            const url = `${config.images.secure_base_url}${config.images.poster_sizes[posterSize.resIndex]}${asset.poster_path}`;
+            const posterTexture = await textureLoader.loadAsync(url);
+            posterTexture.colorSpace = THREE.SRGBColorSpace;
+            posterTexture.wrapS = posterTexture.wrapT = THREE.RepeatWrapping;
+            posterTexture.repeat.set(0.037, 0.025);
 
-          const material = new THREE.MeshStandardMaterial({
-            color: 0xFFFFFF,
-            map: posterTexture,
-          });
+            const material = new THREE.MeshStandardMaterial({
+              color: 0xffffff,
+              map: posterTexture,
+            });
 
-          const poster = new THREE.Mesh(posterGeometry, material);
-          poster.position.x = x;
-          poster.name = url;
-          rowGroup!.add(poster);
+            const poster = new THREE.Mesh(posterGeometry, material);
+            poster.position.x = x;
+            poster.name = asset.name || asset.title || '';
+            rowGroup!.add(poster);
+          } catch {
+            // Skip failed textures silently
+          }
+
+          await new Promise(resolve => setTimeout(resolve, 0));
         }
       };
 
-      let isHeroVisible = true;
+      let texturesReady = false;
 
-      const handleScroll = (e: WheelEvent) => {
-        // Only animate posters when hero is visible (at top of page)
-        if (!isHeroVisible) return;
-
+      // Mousewheel scroll handler — exact same as HTML
+      const handleWheel = (e: WheelEvent) => {
         clearTimeout(waitForIt);
         scrollStatus = true;
         scrollPosters(Math.abs(e.deltaY));
-        waitForIt = setTimeout(() => {
+        waitForIt = window.setTimeout(() => {
           scrollStatus = false;
         }, 50);
       };
-
-      const handlePageScroll = () => {
-        const scrollY = window.scrollY;
-        const heroHeight = window.innerHeight;
-
-        // Disable poster animation once user scrolls past hero section
-        if (scrollY > heroHeight * 0.1) {
-          isHeroVisible = false;
-          disableAnimate = 'true';
-        } else {
-          isHeroVisible = true;
-          // Re-enable auto-animation when scrolled back to top of page
-          disableAnimate = null;
-        }
-
-        // Also check if the hero element is actually visible in the viewport.
-        // This handles cases where scrollY > heroHeight * 0.1 but the hero
-        // is still on screen (e.g. deep-linked URLs, anchor navigation).
-        const rect = containerRef.current?.getBoundingClientRect();
-        if (rect) {
-          const heroTop = rect.top;
-          const heroBottom = rect.bottom;
-          const viewportHeight = window.innerHeight;
-
-          if (heroTop < viewportHeight && heroBottom > 0) {
-            // Hero is visible in viewport — ensure animation is running
-            isHeroVisible = true;
-            disableAnimate = null;
-          }
-        }
-      };
-
-      window.addEventListener('mousewheel', handleScroll, { passive: true });
-      window.addEventListener('scroll', handlePageScroll, { passive: true });
+      window.addEventListener('mousewheel', handleWheel, { passive: true });
       window.stopAnimation = () => {
         disableAnimate = 'true';
       };
 
-      initScene();
-      animate();
+      // Start scene initialization
+      initScene().then(() => { texturesReady = true; }).catch(() => {});
+
+      // EXACT SAME animation loop as HTML
+      const animate = () => {
+        if (frameCount % 3 === 0) {
+          if (!scrollStatus && !disableAnimate) {
+            scrollPosters(0.3);
+          }
+          frameCount = 1;
+          assetGroup.position.y = assetGroupY;
+          if (texturesReady) {
+            renderer.render(scene, camera);
+          }
+        } else {
+          frameCount++;
+        }
+        animationId = requestAnimationFrame(animate);
+      };
+      animationId = requestAnimationFrame(animate);
 
       cleanup = () => {
-        window.removeEventListener('mousewheel', handleScroll);
-        window.removeEventListener('scroll', handlePageScroll);
+        window.removeEventListener('mousewheel', handleWheel);
+        canvas.removeEventListener('webglcontextlost', handleContextLost);
         if (animationId) cancelAnimationFrame(animationId);
+        clearTimeout(waitForIt);
         renderer.dispose();
       };
     };

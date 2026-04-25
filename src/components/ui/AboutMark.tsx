@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -6,54 +6,72 @@ gsap.registerPlugin(ScrollTrigger);
 
 export default function AboutMark() {
   const sectionRef = useRef<HTMLElement>(null);
+  const [mounted, setMounted] = useState(false);
 
+  // Phase 1: Mark as mounted so React re-renders and paints children
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Phase 2: Initialize GSAP after the paint from the re-render
+  useEffect(() => {
+    if (!mounted) return;
+
     const ctx = gsap.context(() => {
       // Animate headings on scroll
-      gsap.from(".craft-heading-line", {
-        y: 100,
-        opacity: 0,
-        duration: 1,
-        stagger: 0.2,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: ".craft-hero",
-          start: "top 70%",
-          toggleActions: "play none none reverse",
-        },
-      });
+      const headings = document.querySelectorAll(".craft-heading-line");
+      if (headings.length > 0) {
+        gsap.from(headings, {
+          y: 100,
+          opacity: 0,
+          duration: 1,
+          stagger: 0.2,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: ".craft-hero",
+            start: "top 70%",
+            toggleActions: "play none none reverse",
+          },
+        });
+      }
 
       // Animate stats
-      gsap.from(".craft-stat", {
-        y: 50,
-        opacity: 0,
-        duration: 0.8,
-        stagger: 0.15,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: ".craft-stats",
-          start: "top 80%",
-          toggleActions: "play none none reverse",
-        },
-      });
+      const stats = document.querySelectorAll(".craft-stat");
+      if (stats.length > 0) {
+        gsap.from(stats, {
+          y: 50,
+          opacity: 0,
+          duration: 0.8,
+          stagger: 0.15,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: ".craft-stats",
+            start: "top 80%",
+            toggleActions: "play none none reverse",
+          },
+        });
+      }
 
       // Animate service cards
-      gsap.from(".craft-service-card", {
-        y: 80,
-        opacity: 0,
-        duration: 0.8,
-        stagger: 0.1,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: ".craft-services",
-          start: "top 70%",
-          toggleActions: "play none none reverse",
-        },
-      });
+      const cards = document.querySelectorAll(".craft-service-card");
+      if (cards.length > 0) {
+        gsap.from(cards, {
+          y: 80,
+          opacity: 0,
+          duration: 0.8,
+          stagger: 0.1,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: ".craft-services",
+            start: "top 70%",
+            toggleActions: "play none none reverse",
+          },
+        });
+      }
     }, sectionRef);
 
     return () => ctx.revert();
-  }, []);
+  }, [mounted]);
 
   return (
     <section ref={sectionRef} className="craft-section">

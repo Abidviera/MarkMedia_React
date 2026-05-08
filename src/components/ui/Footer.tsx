@@ -15,7 +15,8 @@ const footerLinks = {
     { name: 'Instagram', href: '#' },
     { name: 'YouTube', href: '#' },
     { name: 'Vimeo', href: '#' },
-    { name: 'LinkedIn', href: '#' }
+    { name: 'LinkedIn', href: '#' },
+    { name: 'WhatsApp', href: 'https://wa.me/971588120002' }
   ]
 };
 

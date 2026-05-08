@@ -438,6 +438,12 @@ export default function ContactSection() {
                 </a>
               </div>
               <div className="contact-info-item">
+                <p className="contact-info-label">WhatsApp</p>
+                <a href="https://wa.me/971588120002" target="_blank" rel="noopener noreferrer" className="contact-info-value" style={{ color: '#25D366' }}>
+                  +971 58 812 0002
+                </a>
+              </div>
+              <div className="contact-info-item">
                 <p className="contact-info-label">Location</p>
                 <p className="contact-info-text">
                   Dubai, UAE
@@ -448,9 +454,21 @@ export default function ContactSection() {
 
             {/* Social */}
             <div className="contact-social">
-              {['IG', 'FB', 'TW', 'LN'].map((social) => (
-                <a key={social} href="#contact" className="contact-social-link">
-                  <span>{social}</span>
+              {[
+                { label: 'IG', href: '#contact' },
+                { label: 'FB', href: '#contact' },
+                { label: 'TW', href: '#contact' },
+                { label: 'LN', href: '#contact' },
+                { label: 'WA', href: 'https://wa.me/971588120002', external: true }
+              ].map((social) => (
+                <a
+                  key={social.label}
+                  href={social.href}
+                  target={social.external ? '_blank' : undefined}
+                  rel={social.external ? 'noopener noreferrer' : undefined}
+                  className="contact-social-link"
+                >
+                  <span>{social.label}</span>
                 </a>
               ))}
             </div>

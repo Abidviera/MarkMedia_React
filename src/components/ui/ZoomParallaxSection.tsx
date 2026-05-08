@@ -42,7 +42,7 @@ export default function ZoomParallaxSection() {
 					aria-hidden="true"
 					className={cn(
 						'pointer-events-none absolute -top-1/2 left-1/2 h-[120vmin] w-[120vmin] -translate-x-1/2 rounded-full',
-						'bg-[radial-gradient(ellipse_at_center,var(--color-foreground/_10%),transparent_50%)]',
+						'bg-[radial-gradient(ellipse_at_center,rgba(var(--color-foreground-rgb,128,128,128),0.1),transparent_50%)]',
 						'blur-[30px]',
 					)}
 				/>

@@ -316,28 +316,24 @@ export default function PeacockHero() {
         return newList;
       };
 
-      // Load photography textures
+      // Load photography textures with chunked loading to avoid blocking
       const initScene = async () => {
         const textureLoader = new THREE.TextureLoader();
         const imageUrls = shuffleList([...PHOTOGRAPHY_IMAGES]);
-        let x = 0;
-        let y = 0;
-        let rowGroup: THREE.Group;
+        const totalPosters = posterSize.cols * posterSize.rows;
+        const BATCH_SIZE = 10; // Process 10 posters per frame batch
 
-        for (let i = 0; i < posterSize.cols * posterSize.rows; i++) {
-          if (i % posterSize.cols === 0) {
-            y += posterSize.h + posterSize.padding;
-            x = 0;
-            rowGroup = new THREE.Group();
-            rowGroup.position.y = y;
-            assetGroup.add(rowGroup);
-            posterCollection.push(rowGroup);
-          } else {
-            x += posterSize.w + posterSize.padding;
-          }
+        const createRow = (rowIndex: number): THREE.Group => {
+          const rowGroup = new THREE.Group();
+          rowGroup.position.y = (rowIndex + 1) * (posterSize.h + posterSize.padding);
+          assetGroup.add(rowGroup);
+          posterCollection.push(rowGroup);
+          return rowGroup;
+        };
 
+        const loadPoster = async (index: number): Promise<THREE.Mesh | null> => {
           try {
-            const imageUrl = imageUrls[i % imageUrls.length];
+            const imageUrl = imageUrls[index % imageUrls.length];
             const posterTexture = await textureLoader.loadAsync(imageUrl);
             posterTexture.colorSpace = THREE.SRGBColorSpace;
             posterTexture.wrapS = posterTexture.wrapT = THREE.RepeatWrapping;
@@ -349,14 +345,41 @@ export default function PeacockHero() {
             });
 
             const poster = new THREE.Mesh(posterGeometry, material);
-            poster.position.x = x;
-            poster.name = `photo-${i}`;
-            rowGroup!.add(poster);
+            const col = index % posterSize.cols;
+            poster.position.x = col * (posterSize.w + posterSize.padding);
+            poster.name = `photo-${index}`;
+            return poster;
           } catch {
-            // Skip failed textures silently
+            return null;
+          }
+        };
+
+        // Use requestIdleCallback or setTimeout for non-blocking batched loading
+        const yieldToMain = (): Promise<void> =>
+          new Promise(resolve => {
+            if ('requestIdleCallback' in window) {
+              requestIdleCallback(() => resolve(), { timeout: 100 });
+            } else {
+              setTimeout(resolve, 0);
+            }
+          });
+
+        let rowGroup = createRow(0);
+
+        for (let i = 0; i < totalPosters; i++) {
+          if (i > 0 && i % posterSize.cols === 0) {
+            rowGroup = createRow(i / posterSize.cols);
           }
 
-          await new Promise(resolve => setTimeout(resolve, 0));
+          const poster = await loadPoster(i);
+          if (poster) {
+            rowGroup.add(poster);
+          }
+
+          // Yield every BATCH_SIZE posters to prevent blocking
+          if (i > 0 && i % BATCH_SIZE === 0) {
+            await yieldToMain();
+          }
         }
       };
 

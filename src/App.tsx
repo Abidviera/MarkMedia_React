@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ThemeProvider } from "./context/ThemeContext";
+import { LenisProvider } from "./context/LenisContext";
 import Lenis from "lenis";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -31,6 +32,7 @@ gsap.registerPlugin(ScrollTrigger);
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [showWorkGallery, setShowWorkGallery] = useState(false);
+  const lenisRef = useRef<Lenis | null>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 2500);
@@ -54,48 +56,87 @@ export default function App() {
   }, []);
 
   // ─────────────────────────────────────────────────────────────
-  // LIGHTWEIGHT SMOOTH SCROLL — Native CSS + passive RAF sync
-  // Avoids blocking the wheel event handler at all costs.
+  // ULTRA-SMOOTH SCROLL — Lenis + GSAP ScrollTrigger Integration
   // ─────────────────────────────────────────────────────────────
   useEffect(() => {
     if (showWorkGallery) return;
 
-    // Lenis for its internal smooth interpolation, but we do NOT intercept wheel
+    // Add Lenis class to html for CSS targeting
+    document.documentElement.classList.add('lenis', 'lenis-smooth');
+
+    // Create Lenis instance with optimized settings for ultra-smooth scrolling
     const lenis = new Lenis({
-      duration: 0.8,
+      duration: 1.2,
       easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       orientation: 'vertical',
-      smoothWheel: false,  // Don't intercept wheel — use native scroll, Lenis just interpolates
-      syncTouch: false,
-      wheelMultiplier: 1,
-      touchMultiplier: 1,
+      gestureOrientation: 'vertical',
+      smoothWheel: true,          // Enable smooth wheel scrolling
+      wheelMultiplier: 1,         // Wheel sensitivity
+      touchMultiplier: 2,         // Touch sensitivity for mobile
       infinite: false,
     });
 
+    lenisRef.current = lenis;
+
     // ── Integrate Lenis with GSAP ScrollTrigger ──
-    // KEY: ScrollTrigger.update() runs in the GSAP ticker, NOT on scroll events.
-    // This means scroll events are NEVER blocked by ScrollTrigger work.
-    // GSAP's ticker runs at 60fps and batches all ScrollTrigger updates naturally.
+    // Configure GSAP ticker for smooth animations
     gsap.ticker.lagSmoothing(0);
+
+    // Update ScrollTrigger on each GSAP tick
     gsap.ticker.add(() => {
       ScrollTrigger.update();
     });
 
-    // Lenis RAF loop
+    // Connect Lenis RAF to GSAP ticker for synchronized animations
     gsap.ticker.add((time: number) => {
       lenis.raf(time * 1000);
     });
 
-    // Expose Lenis globally so Navigation can use it
+    // Expose Lenis globally for components
     (window as unknown as Record<string, unknown>).__lenis = lenis;
 
     return () => {
+      // Cleanup
+      document.documentElement.classList.remove('lenis', 'lenis-smooth');
       gsap.ticker.remove(() => {
         ScrollTrigger.update();
       });
       gsap.ticker.remove((time: number) => lenis.raf(time * 1000));
       lenis.destroy();
+      lenisRef.current = null;
       delete (window as unknown as Record<string, unknown>).__lenis;
+    };
+  }, [showWorkGallery]);
+
+  // ─────────────────────────────────────────────────────────────
+  // Lenis scroll helper for components
+  // ─────────────────────────────────────────────────────────────
+  useEffect(() => {
+    if (showWorkGallery) return;
+
+    // Helper function for smooth scroll-to
+    (window as unknown as Record<string, unknown>).__lenisScrollTo = (
+      target: string | number | HTMLElement,
+      options?: {
+        offset?: number;
+        duration?: number;
+        immediate?: boolean;
+        lock?: boolean;
+        easing?: (t: number) => number;
+      }
+    ) => {
+      lenisRef.current?.scrollTo(target, {
+        offset: 0,
+        duration: 1.2,
+        immediate: false,
+        lock: true,
+        easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        ...options,
+      });
+    };
+
+    return () => {
+      delete (window as unknown as Record<string, unknown>).__lenisScrollTo;
     };
   }, [showWorkGallery]);
 
@@ -109,87 +150,85 @@ export default function App() {
 
   return (
     <ThemeProvider>
-      <CustomCursor />
+      <LenisProvider>
+        <CustomCursor />
 
-      {isLoading && <Preloader />}
+        {isLoading && <Preloader />}
 
-      <div className={`${isLoading ? "invisible" : "visible"}`}>
-        <Navigation onOpenWorkGallery={() => setShowWorkGallery(true)} />
+        <div className={`${isLoading ? "invisible" : "visible"}`}>
+          <Navigation onOpenWorkGallery={() => setShowWorkGallery(true)} />
 
-        <main>
-          {/* New hero — scroll-driven frame animation with peacock imagery */}
-          <MarkMediaHero />
+          <main>
+            {/* New hero — scroll-driven frame animation with peacock imagery */}
+            <MarkMediaHero />
 
-          <LazySection>
-            {/* Hero with 3D poster wall (Three.js) */}
-            <PeacockHero />
-          </LazySection>
+            <LazySection>
+              {/* Hero with 3D poster wall (Three.js) */}
+              <PeacockHero />
+            </LazySection>
 
-          <LazySection>
-            {/* About & Stats */}
-            <AboutMark />
-          </LazySection>
+            <LazySection>
+              {/* About & Stats */}
+              <AboutMark />
+            </LazySection>
 
-          <LazySection>
-            {/* Video showcase with scroll (GSAP) */}
-            <VideoShowcaseSection />
-          </LazySection>
+            <LazySection>
+              {/* Video showcase with scroll (GSAP) */}
+              <VideoShowcaseSection />
+            </LazySection>
 
-          <LazySection>
-            {/* Craft Edge with timeline (GSAP) */}
-            <CraftEdgeSection />
-          </LazySection>
+            <LazySection>
+              {/* Craft Edge with timeline (GSAP) */}
+              <CraftEdgeSection />
+            </LazySection>
 
-          <LazySection>
-            {/* Bento Grid Portfolio */}
-            <BentoGrid />
-          </LazySection>
+            <LazySection>
+              {/* Bento Grid Portfolio */}
+              <BentoGrid />
+            </LazySection>
 
-          
+            <LazySection>
+              {/* Zoom Parallax */}
+              <ZoomParallaxSection />
+            </LazySection>
 
-          <LazySection>
-            {/* Zoom Parallax */}
-            <ZoomParallaxSection />
-          </LazySection>
+            <LazySection>
+              {/* Marquee with smooth scroll */}
+              <MarqueeSection />
+            </LazySection>
 
-          <LazySection>
-            {/* Marquee with smooth scroll */}
-            <MarqueeSection />
-          </LazySection>
+            <LazySection>
+              {/* Stats Counter (GSAP animated) */}
+              <StatsSection />
+            </LazySection>
 
-          <LazySection>
-            {/* Stats Counter (GSAP animated) */}
-            <StatsSection />
-          </LazySection>
+            <LazySection>
+              {/* Awards with 3D particles (Three.js) */}
+              <AwardsSection />
+            </LazySection>
 
-       
+            <LazySection>
+              {/* Testimonials with Framer Motion */}
+              <TestimonialsSection />
+            </LazySection>
 
-          <LazySection>
-            {/* Awards with 3D particles (Three.js) */}
-            <AwardsSection />
-          </LazySection>
+            <LazySection>
+              {/* Insights/Blog */}
+              <InsightsSection />
+            </LazySection>
 
-          <LazySection>
-            {/* Testimonials with Framer Motion */}
-            <TestimonialsSection />
-          </LazySection>
+            <LazySection>
+              {/* Contact Form */}
+              <ContactSection />
+            </LazySection>
 
-          <LazySection>
-            {/* Insights/Blog */}
-            <InsightsSection />
-          </LazySection>
-
-          <LazySection>
-            {/* Contact Form */}
-            <ContactSection />
-          </LazySection>
-
-          <LazySection>
-            {/* Footer */}
-            <FooterSection />
-          </LazySection>
-        </main>
-      </div>
+            <LazySection>
+              {/* Footer */}
+              <FooterSection />
+            </LazySection>
+          </main>
+        </div>
+      </LenisProvider>
     </ThemeProvider>
   );
 }

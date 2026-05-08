@@ -230,7 +230,7 @@ export default function MarkMediaHero() {
       ref={sectionRef}
       id="markmedia-hero"
       className="relative w-full h-screen overflow-hidden"
-      style={{ backgroundColor: '#000' }}
+      style={{ backgroundColor: '#000', margin: 0, padding: 0, marginBottom: '-2px' }}
     >
       {/* Loading state */}
       {!imagesReady && (
@@ -268,14 +268,20 @@ export default function MarkMediaHero() {
         style={{ zIndex: 1, opacity: 0.35 }}
       />
 
-      {/* Gradient overlays for depth */}
+      {/* Gradient overlays for depth - fully opaque at bottom to remove white gap */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
           zIndex: 2,
           background:
-            'linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, transparent 30%, transparent 60%, rgba(0,0,0,0.8) 100%)',
+            'linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.15) 30%, rgba(0,0,0,0.15) 60%, rgba(0,0,0,0.9) 100%)',
         }}
+      />
+
+      {/* Solid black strip at bottom edge to prevent white gap */}
+      <div
+        className="absolute left-0 right-0 bottom-0 h-[2px] bg-black pointer-events-none"
+        style={{ zIndex: 5 }}
       />
 
       {/* Grid lines */}

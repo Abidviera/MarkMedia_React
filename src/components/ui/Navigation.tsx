@@ -13,12 +13,20 @@ export default function Navigation({ onOpenWorkGallery }: { onOpenWorkGallery: (
     lenisRef.current = (window as unknown as Record<string, Lenis>).__lenis ?? null;
   }, []);
 
+  // Use Lenis scroll for smooth scrolled state detection
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 80);
+    const lenis = lenisRef.current;
+    if (!lenis) return;
+
+    const handleScroll = ({ scroll }: { scroll: number }) => {
+      setScrolled(scroll > 80);
     };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+
+    lenis.on('scroll', handleScroll);
+
+    return () => {
+      lenis.off('scroll', handleScroll);
+    };
   }, []);
 
   // Prevent body scroll when menu is open

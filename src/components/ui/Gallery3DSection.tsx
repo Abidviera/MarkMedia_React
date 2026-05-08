@@ -129,17 +129,25 @@ function ParticleSystem() {
   );
 }
 
-// Camera Controller with Scroll
+// Camera Controller with Scroll - using Lenis
 function CameraController() {
   const { camera } = useThree();
   const scrollY = useRef(0);
 
   useEffect(() => {
-    const handleScroll = () => {
-      scrollY.current = window.scrollY;
+    const lenis = (window as unknown as Record<string, { on: (event: string, callback: (e: { scroll: number }) => void) => void; off: (event: string, callback: (e: { scroll: number }) => void) => void }>).__lenis;
+
+    if (!lenis) return;
+
+    const handleScroll = ({ scroll }: { scroll: number }) => {
+      scrollY.current = scroll;
     };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+
+    lenis.on('scroll', handleScroll);
+
+    return () => {
+      lenis.off('scroll', handleScroll);
+    };
   }, []);
 
   useFrame(() => {

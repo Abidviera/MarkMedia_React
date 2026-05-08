@@ -6,11 +6,31 @@
    ULTRA-SMOOTH SCROLL OPTIMIZATIONS
    ============================================= */
 
-/* Native smooth scrolling — zero JS overhead, hardware-accelerated */
+/* Lenis smooth scrolling — disabled native smooth for better performance */
 html {
   overflow-anchor: none;
-  scroll-behavior: smooth;
+  scroll-behavior: auto !important;  /* Disable native smooth - Lenis handles it */
   scroll-padding-top: 0px;
+}
+
+/* Lenis wrapper - enables smooth scrolling on body */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+/* Hide default scrollbar when using Lenis for custom styling */
+html::-webkit-scrollbar {
+  display: none;
+}
+
+html {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 /* ── GPU acceleration layer for all animated elements ──
@@ -140,7 +160,7 @@ html {
 }
 
 html {
-  scroll-behavior: smooth;
+  scroll-behavior: auto !important;  /* Lenis handles smooth scrolling */
 }
 
 body {

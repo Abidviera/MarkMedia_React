@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useOnView } from '../../hooks/useOnView';
+import Lenis from 'lenis';
 
 interface Section {
   service: string;
@@ -70,14 +71,15 @@ export default function VideoShowcaseSection() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Scroll-based video change for Desktop — only active when in view
+  // Scroll-based video change for Desktop — using Lenis for smooth scroll
   useEffect(() => {
     if (isMobile || !isInView) return;
 
-    const handleScroll = () => {
-      if (!containerRef.current) return;
+    const lenis = (window as unknown as Record<string, Lenis>).__lenis;
+    const container = containerRef.current;
+    if (!container || !lenis) return;
 
-      const container = containerRef.current;
+    const handleScroll = () => {
       const rect = container.getBoundingClientRect();
       const containerHeight = container.offsetHeight;
       const viewportHeight = window.innerHeight;
@@ -100,9 +102,13 @@ export default function VideoShowcaseSection() {
       setCurrentSection(newSection);
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
+    // Use Lenis scroll event instead of native scroll
+    lenis.on('scroll', handleScroll);
     handleScroll();
-    return () => window.removeEventListener('scroll', handleScroll);
+
+    return () => {
+      lenis.off('scroll', handleScroll);
+    };
   }, [isMobile, isInView]);
 
   // Play/pause videos based on current section — only when section is in view

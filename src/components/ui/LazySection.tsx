@@ -58,6 +58,8 @@ export default function LazySection({
       data-lazy-section=""
       style={{
         position: 'relative',
+        marginTop: 0,
+        paddingTop: 0,
       }}
     >
       {isVisible ? children : null}

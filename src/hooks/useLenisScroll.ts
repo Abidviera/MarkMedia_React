@@ -1,5 +1,5 @@
-import { useEffect, useState, useCallback, useRef } from 'react';
-import { motion, useSpring, useTransform } from 'framer-motion';
+import { useEffect, useState, useRef } from 'react';
+import { useSpring } from 'framer-motion';
 import type { MotionValue } from 'framer-motion';
 
 /**
@@ -64,10 +64,10 @@ export function useLenisScroll(options?: {
  * Hook to create a smooth MotionValue from Lenis scroll
  */
 export function useLenisScrollValue(): MotionValue<number> {
-  const motionValue = useRef<MotionValue<number> | null>(null);
+  const motionValueRef = useRef<MotionValue<number> | null>(null);
 
-  if (!motionValue.current) {
-    motionValue.current = useRef(new motionValue(0)).current;
+  if (!motionValueRef.current) {
+    motionValueRef.current = new MotionValue(0);
   }
 
   useEffect(() => {
@@ -76,7 +76,7 @@ export function useLenisScrollValue(): MotionValue<number> {
     if (!lenis) return;
 
     const handleScroll = ({ scroll }: { scroll: number }) => {
-      motionValue.current?.set(scroll);
+      motionValueRef.current?.set(scroll);
     };
 
     lenis.on('scroll', handleScroll);
@@ -86,7 +86,7 @@ export function useLenisScrollValue(): MotionValue<number> {
     };
   }, []);
 
-  return motionValue.current;
+  return motionValueRef.current;
 }
 
 /**
@@ -94,7 +94,6 @@ export function useLenisScrollValue(): MotionValue<number> {
  */
 export function useLenisScrollSpring() {
   const [scrollY, setScrollY] = useState(0);
-  const lenisRef = useRef<ReturnType<typeof setTimeout>>();
 
   useEffect(() => {
     const lenis = (window as unknown as Record<string, { raf: (time: number) => boolean; scroll: number; on: (event: string, callback: (e: { scroll: number }) => void) => void; off: (event: string, callback: (e: { scroll: number }) => void) => void }>).__lenis;

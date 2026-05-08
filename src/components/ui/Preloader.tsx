@@ -42,56 +42,44 @@ export default function Preloader() {
         }
       );
 
-      // Phase 2: Progress animation
-      const progressObj = { value: 0 };
-      gsap.to(progressObj, {
-        value: 100,
-        duration: 2.5,
-        ease: 'power2.inOut',
-        onUpdate: () => {
-          setProgress(progressObj.value);
-        },
-        onComplete: () => {
-          setPhase('reveal');
-        }
+      // Phase 2: Simulated loading with phase transition
+      gsap.delayedCall(2.5, () => {
+        setPhase('reveal');
       });
 
-      // Animate progress bar
-      gsap.fromTo('.preloader-progress-fill',
-        { scaleX: 0 },
-        {
-          scaleX: 1,
-          duration: 2.5,
-          ease: 'power2.inOut',
-          delay: 0.6
-        }
-      );
+      // Rotate decorative shapes - check if elements exist first
+      const decoShape1 = document.querySelector('.deco-shape-1');
+      const decoShape2 = document.querySelector('.deco-shape-2');
+      if (decoShape1) {
+        gsap.to('.deco-shape-1', {
+          rotation: 360,
+          duration: 20,
+          repeat: -1,
+          ease: 'none'
+        });
+      }
+      if (decoShape2) {
+        gsap.to('.deco-shape-2', {
+          rotation: -360,
+          duration: 25,
+          repeat: -1,
+          ease: 'none'
+        });
+      }
 
-      // Rotate decorative shapes
-      gsap.to('.deco-shape-1', {
-        rotation: 360,
-        duration: 20,
-        repeat: -1,
-        ease: 'none'
-      });
-
-      gsap.to('.deco-shape-2', {
-        rotation: -360,
-        duration: 25,
-        repeat: -1,
-        ease: 'none'
-      });
-
-      // Pulse the orbs
-      gsap.to('.preloader-orb', {
-        scale: 1.2,
-        opacity: 0.3,
-        duration: 2,
-        yoyo: true,
-        repeat: -1,
-        ease: 'sine.inOut',
-        stagger: 0.5
-      });
+      // Pulse the orbs - check if elements exist first
+      const orbs = document.querySelectorAll('.preloader-orb');
+      if (orbs.length > 0) {
+        gsap.to('.preloader-orb', {
+          scale: 1.2,
+          opacity: 0.3,
+          duration: 2,
+          yoyo: true,
+          repeat: -1,
+          ease: 'sine.inOut',
+          stagger: 0.5
+        });
+      }
 
     }, containerRef);
 

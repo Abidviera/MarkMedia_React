@@ -102,6 +102,12 @@ export default function Navigation({ onOpenWorkGallery }: { onOpenWorkGallery: (
           letter-spacing: -0.02em;
           position: relative;
           z-index: 10001;
+          transition: color 0.3s ease;
+        }
+
+        [data-theme="light"] .nav-logo,
+        [data-theme="light"] .nav-link {
+          color: #000000;
         }
 
         .nav-logo::after {
@@ -140,6 +146,10 @@ export default function Navigation({ onOpenWorkGallery }: { onOpenWorkGallery: (
 
         .nav-link:hover {
           color: #ffffff;
+        }
+
+        [data-theme="light"] .nav-link:hover {
+          color: #000000;
         }
 
         .nav-link::after {
@@ -223,6 +233,10 @@ export default function Navigation({ onOpenWorkGallery }: { onOpenWorkGallery: (
           background: var(--card-bg);
         }
 
+        [data-theme="light"] .nav-theme-toggle {
+          color: #000000;
+        }
+
         .nav-whatsapp-float {
           position: fixed;
           bottom: 2rem;
@@ -269,6 +283,10 @@ export default function Navigation({ onOpenWorkGallery }: { onOpenWorkGallery: (
           background: #ffffff;
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           transform-origin: center;
+        }
+
+        [data-theme="light"] .nav-hamburger span {
+          background: #000000;
         }
 
         .nav-hamburger.active span:nth-child(1) {

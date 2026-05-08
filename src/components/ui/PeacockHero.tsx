@@ -1,9 +1,6 @@
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 
-const TMDB_API_KEY = '17f6c7973c2ed29ef001953add2d04d3';
-const PEACOCK_PROVIDER = [386, 387];
-
 declare global {
   interface Window {
     stopAnimation?: () => void;
@@ -220,6 +217,96 @@ export default function PeacockHero() {
         }
       };
 
+      // Photography images - Only: Gaming, Sports, Hospital, Food Ads, Festivals, Dubai Functions, Travel, Cultural, Wedding, Events (All Working Images)
+      const PHOTOGRAPHY_IMAGES = [
+        // GAMING / ESPORTS
+        'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=600&q=80',
+        'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=600&q=80',
+        'https://images.unsplash.com/photo-1593305841991-05c297ba4575?w=600&q=80',
+        'https://images.unsplash.com/photo-1560253023-3ec5d502959f?w=600&q=80',
+        'https://images.unsplash.com/photo-1592478411213-6153e4ebc07d?w=600&q=80',
+
+        // SPORTS
+        'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&q=80',
+        'https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?w=600&q=80',
+        'https://images.unsplash.com/photo-1517649763962-0c623066013b?w=600&q=80',
+        'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=600&q=80',
+        'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=600&q=80',
+        'https://images.unsplash.com/photo-1547347298-4074fc3086f0?w=600&q=80',
+
+        // HOSPITAL / HEALTHCARE
+        'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=600&q=80',
+        'https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=600&q=80',
+        'https://images.unsplash.com/photo-1551076805-e1869033e561?w=600&q=80',
+        'https://images.unsplash.com/photo-1584515933487-779824d29309?w=600&q=80',
+        'https://images.unsplash.com/photo-1571772996211-2f02c9727629?w=600&q=80',
+        'https://images.unsplash.com/photo-1559757175-5700dde675bc?w=600&q=80',
+        'https://images.unsplash.com/photo-1516549655169-df83a0774514?w=600&q=80',
+
+        // FOOD ADVERTISEMENT
+        'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&q=80',
+        'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=600&q=80',
+        'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&q=80',
+        'https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=600&q=80',
+        'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&q=80',
+        'https://images.unsplash.com/photo-1476224203421-9ac39bcb3327?w=600&q=80',
+        'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=600&q=80',
+        'https://images.unsplash.com/photo-1493770348161-369560ae357d?w=600&q=80',
+
+        // FESTIVALS
+        'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=600&q=80',
+        'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&q=80',
+        'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=600&q=80',
+        'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=600&q=80',
+        'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&q=80',
+
+        // DUBAI FUNCTIONS / EVENTS
+        'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&q=80',
+        'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600&q=80',
+        'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=600&q=80',
+        'https://images.unsplash.com/photo-1579566346927-c68383817a25?w=600&q=80',
+        'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=600&q=80',
+        'https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?w=600&q=80',
+        'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=600&q=80',
+        'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=600&q=80',
+
+        // TRAVEL
+        'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=600&q=80',
+        'https://images.unsplash.com/photo-1530789253388-582c481c54b0?w=600&q=80',
+        'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&q=80',
+        'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=600&q=80',
+        'https://images.unsplash.com/photo-1500835556837-99ac94a94552?w=600&q=80',
+        'https://images.unsplash.com/photo-1506012787146-f92b2d7d6d96?w=600&q=80',
+        'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=600&q=80',
+        'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=600&q=80',
+
+        // CULTURAL
+        'https://images.unsplash.com/photo-1564769625905-50e93615e769?w=600&q=80',
+        'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=600&q=80',
+        'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=600&q=80',
+        'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&q=80',
+
+        // WEDDING
+        'https://images.unsplash.com/photo-1519741497674-611481863552?w=600&q=80',
+        'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=600&q=80',
+        'https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=600&q=80',
+        'https://images.unsplash.com/photo-1591604466107-ec97de577aff?w=600&q=80',
+        'https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=600&q=80',
+        'https://images.unsplash.com/photo-1537633552985-df8429e8048b?w=600&q=80',
+        'https://images.unsplash.com/photo-1460978812857-470ed1c77af0?w=600&q=80',
+        'https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=600&q=80',
+
+        // EVENTS
+        'https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=600&q=80',
+        'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=600&q=80',
+        'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=600&q=80',
+        'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&q=80',
+        'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&q=80',
+        'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600&q=80',
+        'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=600&q=80',
+        'https://images.unsplash.com/photo-1579566346927-c68383817a25?w=600&q=80',
+      ];
+
       const shuffleList = <T,>(list: T[]): T[] => {
         const newList: T[] = [];
         while (list.length > 0) {
@@ -229,49 +316,15 @@ export default function PeacockHero() {
         return newList;
       };
 
-      const fetchAndStore = <T,>(key: string, url: string): Promise<T> => {
-        const stored = localStorage.getItem(key);
-        if (stored) {
-          return Promise.resolve(JSON.parse(stored) as T);
-        }
-        return fetch(url)
-          .then(res => res.json())
-          .then(data => {
-            localStorage.setItem(key, JSON.stringify(data));
-            return data as T;
-          });
-      };
-
-      const fetchConfig = () =>
-        fetchAndStore<{ images: { secure_base_url: string; poster_sizes: string[] } }>(
-          'tmdbConfig',
-          `https://api.themoviedb.org/3/configuration?api_key=${TMDB_API_KEY}`
-        );
-
-      const fetchAssetList = (type: 'tv' | 'movie', page: number) => {
-        const url = `https://api.themoviedb.org/3/discover/${type}?api_key=${TMDB_API_KEY}&include_adult=true&sort_by=popularity.desc&language=en-US&page=${page}&watch_region=US&with_watch_providers=${PEACOCK_PROVIDER.join('|')}&with_networks=3353`;
-        return fetchAndStore(`tmdbAssetList${type}${page}`, url) as Promise<{ results: { poster_path: string; name?: string; title?: string }[] }>;
-      };
-
-      // Load textures one at a time with a yield between each to avoid blocking the main thread
+      // Load photography textures
       const initScene = async () => {
-        const config = await fetchConfig();
-        const assetList = shuffleList([
-          ...(await fetchAssetList('tv', 1)).results,
-          ...(await fetchAssetList('tv', 2)).results,
-          ...(await fetchAssetList('tv', 3)).results,
-          ...(await fetchAssetList('movie', 1)).results,
-          ...(await fetchAssetList('movie', 2)).results,
-          ...(await fetchAssetList('movie', 3)).results,
-        ]).filter(asset => asset.poster_path).splice(0, posterSize.cols * posterSize.rows);
-
         const textureLoader = new THREE.TextureLoader();
+        const imageUrls = shuffleList([...PHOTOGRAPHY_IMAGES]);
         let x = 0;
         let y = 0;
         let rowGroup: THREE.Group;
 
-        for (let i = 0; i < assetList.length; i++) {
-          const asset = assetList[i];
+        for (let i = 0; i < posterSize.cols * posterSize.rows; i++) {
           if (i % posterSize.cols === 0) {
             y += posterSize.h + posterSize.padding;
             x = 0;
@@ -284,8 +337,8 @@ export default function PeacockHero() {
           }
 
           try {
-            const url = `${config.images.secure_base_url}${config.images.poster_sizes[posterSize.resIndex]}${asset.poster_path}`;
-            const posterTexture = await textureLoader.loadAsync(url);
+            const imageUrl = imageUrls[i % imageUrls.length];
+            const posterTexture = await textureLoader.loadAsync(imageUrl);
             posterTexture.colorSpace = THREE.SRGBColorSpace;
             posterTexture.wrapS = posterTexture.wrapT = THREE.RepeatWrapping;
             posterTexture.repeat.set(0.037, 0.025);
@@ -297,7 +350,7 @@ export default function PeacockHero() {
 
             const poster = new THREE.Mesh(posterGeometry, material);
             poster.position.x = x;
-            poster.name = asset.name || asset.title || '';
+            poster.name = `photo-${i}`;
             rowGroup!.add(poster);
           } catch {
             // Skip failed textures silently

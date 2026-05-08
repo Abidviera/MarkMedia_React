@@ -16,19 +16,20 @@ const images = [
 		alt: 'Event coverage',
 	},
 	{
-		src: '/markphotos/2100.webp',
+		src: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&q=80',
 		alt: 'Advertising campaign',
 	},
-	{
-		src: '/markphotos/nivin.webp',
-		alt: 'Fashion photography',
-	},
-	{
-		src: '/markphotos/DSC_5476.webp',
+		{
+		src: 'https://images.unsplash.com/photo-1460978812857-470ed1c77af0?w=600&q=80',
 		alt: 'Product showcase',
 	},
 	{
-		src: '/markphotos/DSC_8750.webp',
+		src: 'https://images.unsplash.com/photo-1571772996211-2f02c9727629?w=600&q=80',
+		alt: 'Fashion photography',
+	},
+
+	{
+		src: 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=600&q=80',
 		alt: 'Creative visuals',
 	},
 ];
